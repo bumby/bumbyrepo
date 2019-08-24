@@ -11,7 +11,7 @@ from PyQt5.QtCore import *
 from PyQt5 import uic
 #from sqlite_save_from_Ebest import *
 from bestConnect import *
-from PyOptMon import *
+from PyOptHogaMon import *
 from DBanal import *
 from opt_order_tr import *
 from sec_info import *
@@ -20,27 +20,59 @@ import pandas as pd
 import sqlite3
 import datetime
 
+from subject import *
+from observer import *
 
 
 form_class = uic.loadUiType("mainwindowv03.ui")[0]
 
-class MyWindow(QMainWindow, form_class):
+class accessDB:
+    def __init__(self):
+        self.con = sqlite3.connect("D:\work\Y2018\option\kospi.db")
+        
+    def saveToDB(self, calltable, puttable):
+        print("data 저장")
+        dt = datetime.datetime.now().strftime("%y%m%d%H%M%S")
+       
+        call_table_name = "call"+dt
+        calltable.to_sql(call_table_name, self.con, if_exists='replace')
+       
+        put_table_name = "put"+dt
+        puttable.to_sql(put_table_name, self.con, if_exists='replace')
+        print("data 저장끝")
+
+
+class MyWindow(QMainWindow, form_class, Observer):
     def __init__(self):
         super().__init__()
 
-        #모의 패스워드
-        self.secinfo = secInfo()
-        self.passwd =  self.secinfo.getOrderPasswd()       
-        self.setupUi(self)
+        #subject 생성
+        self.optdata = OptData() #ㅐ
         
+        
+        #로그인 프로세스
+        self.secinfo = secInfo()
         self.best = BestAccess()
         self.accounts_list = self.best.comm_connect(self.secinfo)
-        self.comboBox.addItems(self.accounts_list)
+     
+        self.passwd =  self.secinfo.getOrderPasswd()  
         
-        self.Option_expiration_mon = "201908"
-        self.optmon = PyOptMon()
-        #self.optmon.start(self.Option_expiration_mon)        
+        self.setupUi(self)
+                
+        self.Option_expiration_mon = "201909"
+        #self.optmon = PyOptHogaMon()
+        self.optmon = PyOptHogaMon.get_instance()
+        #opthogamon observer 등록
+        self.optmon.register_subject(self.optdata)
+      
+        #자신을 observer로 등록
+        self.register_subject(self.optdata)  
         
+        
+        
+        
+        self.optmon.start(self.Option_expiration_mon)        
+           
         #db 분석 정의 
         self.dbanal = DBalalysis()
        
@@ -54,11 +86,52 @@ class MyWindow(QMainWindow, form_class):
         
         #timer2
         self.timer2 = QTimer(self)
-        self.timer2.start(1000*3)
-        self.timer2.timeout.connect(self.timeout2)
+        #self.timer2.start(1000*4)
+        #self.timer2.timeout.connect(self.timeout2)
        
         self.remained_burget = 1
-   
+        self.access_db = accessDB()
+        
+          
+#------------------------------observer implementaion ---------------        
+    def update(self, 호가시간_, 매도호가1_, 매수호가1_, 단축코드_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
+        self.호가시간=호가시간_
+        self.매도호가1=매도호가1_
+        self.매수호가1=매수호가1_
+        self.단축코드=단축코드_
+        
+        self.display()
+        self.updateGuiOptHoga()
+
+    def register_subject(self, subject):
+        self.subject = subject
+        self.subject.register_observer(self)
+
+    def display(self):
+        print ("Gui updated")
+
+    def updateGuiOptHoga(self):
+        itemcount = len(self.subject.optHogaChart)
+        for j in range(itemcount):
+          #  item = QTableWidgetItem(balcv[j][])
+            item = QTableWidgetItem(self.subject.optHogaChart[j][0])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(j,0,item)  
+          
+            item = QTableWidgetItem(self.subject.optHogaChart[j][1])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(j,1,item)
+            
+            item = QTableWidgetItem(self.subject.optHogaChart[j][2])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(j,2,item)
+       
+        self.tableWidget_2.setRowCount(itemcount)
+        
+        print("on construction print", itemcount)
+
+#----------------------------------------------------------     
+          
     
     def code_changed(self):
         print("code changed")
@@ -82,13 +155,13 @@ class MyWindow(QMainWindow, form_class):
         LoanDt = ""
         OrdCndiTpCode = 0 # 0 없음 1 IOC 2 FOK
 
-        ordrslt = self.best.order_stock(account, self.passwd, code, OrdQty, OrdPrc, order_type_lookup[BnsTpcode], hoga_lookup[OrdprcPtnCode], MgntrnCode, LoanDt, OrdCndiTpCode)
+        ordrslt = self.best.order_stock(account, self.secinfo.getOrderPasswd(), code, OrdQty, OrdPrc, order_type_lookup[BnsTpcode], hoga_lookup[OrdprcPtnCode], MgntrnCode, LoanDt, OrdCndiTpCode)
          
         
         
     def check_balance(self):
         account = self.comboBox.currentText()
-        sunamt1, mamt,tappamt,tdtsunik,sunamt,itemcount,balcv = self.best.get_curr_stock_balance(account,self.passwd)
+        sunamt1, mamt,tappamt,tdtsunik,sunamt,itemcount,balcv = self.best.get_curr_stock_balance(account,self.secinfo.getOrderPasswd())
         
         item = QTableWidgetItem(sunamt1)
         item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
@@ -151,28 +224,19 @@ class MyWindow(QMainWindow, form_class):
 
         #
         ATMS = [] #임시 
-        ATMS, deal_signal, sell_code, sell_price, buy_code, buy_price = self.dbanal.extract_call_gap(df_call, 14.5, ATMS)
-        print("sell ", deal_signal)
+        ATMS, deal_signal, sell_code, sell_price, buy_code, buy_price = self.dbanal.extract_call_gap(df_call, 10.0, ATMS)
+        print("sell ", sell_code, buy_code, deal_signal)
         
         print("주문 판단 중...")
         #def order_option(self, 계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량):
         if deal_signal == "yes" and self.remained_burget == 1:
-            self.order.order_option(self.secinfo.getOptAccount, self.secinfo.getOrderPasswd, sell_code, 1, 00, sell_price, 1) #모의 투자 비밀번호 사용
-            self.order.order_option(self.secinfo.getOptAccount, self.secinfo.getOrderPasswd, buy_code, 2, 00, buy_price, 1)
+            print(self.secinfo.getOptAccount(), self.secinfo.getOrderPasswd(), sell_code, "1", "00", "{:.2f}".format(sell_price), "1")
+            self.order.order_option(self.secinfo.getOptAccount(), self.secinfo.getOrderPasswd(), sell_code, "1", "00", "{:.2f}".format(sell_price), "1") #모의 투자 비밀번호 사용
+            self.order.order_option(self.secinfo.getOptAccount(), self.secinfo.getOrderPasswd(), buy_code, "2", "00", "{:.2f}".format(buy_price), "1")
             self.remained_burget = 0
-        
-        print("data 저장")
-        
-        con = sqlite3.connect("D:\work\Y2018\option\kospi.db")
-        dt = datetime.datetime.now().strftime("%y%m%d%H%M%S")
-        
-        call_table_name = "call"+dt
-        df_call.to_sql(call_table_name, con, if_exists='replace')
-       
-        put_table_name = "put"+dt
-        df_put.to_sql(put_table_name, con, if_exists='replace')
-       
-        print("data 저장끝")
+
+        self.access_db.saveToDB(df_call, df_put) #database에 call put 데이타 테이블을 저장한다. 
+  
         
 if __name__=="__main__":
     app = QApplication(sys.argv)
