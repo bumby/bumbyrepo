@@ -32,11 +32,12 @@ class Subject:
     
     
     @abstractmethod
-    
+
     def notify_observers(self):
     
         pass
 
+    
 
 
 
@@ -45,11 +46,17 @@ class OptData(Subject):
         super(OptData, self).__init__()
         self._observer_list = []
        
+        #현재 호가 정보 
         self.호가시간 = 0
+        self.단축코드 = ""
         self.매도호가1 = 0
         self.매수호가1 = 0
-        self.단축코드 = ""
-#        
+        self.이론가 = 0
+
+        #현재 kospi정보 
+        self.kospi200지수 = 0
+        self.내재변동성 = 0       
+                
         self.optHogaChart = []
         
     def register_observer(self, observer):
@@ -68,16 +75,36 @@ class OptData(Subject):
 
     def notify_observers(self): #옵저버에게 알리는 부분 (옵저버리스트에 있는 모든 옵저버들의 업데이트 메서드 실행)
         for observer in self._observer_list:
-            observer.update( self.호가시간, self.매도호가1, self.매수호가1, self.단축코드)
+            observer.update( self.호가시간, self.단축코드, self.매도호가1, self.매수호가1)
 
     def optChanged(self):
         self.notify_observers() #감정이 변하면 옵저버에게 알립니다.
 
     def change_optprice(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_ ):
         self.호가시간=호가시간_
+        self.단축코드=단축코드_
         self.매도호가1=매도호가1_
         self.매수호가1=매수호가1_
+      
+        
+        found = False
+        for n,s in enumerate(self.optHogaChart):
+            if 단축코드_ in s:
+                self.optHogaChart[n] = [단축코드_, 매도호가1_, 매수호가1_ ]
+                found = True
+        if found == False:
+            self.optHogaChart.append([단축코드_, 매도호가1_, 매수호가1_])
+        self.optChanged()
+
+    def change_base(self, 호가시간_, kospi200지수_, 이론가_, 단축코드_, 내재변동성_, 매도호가1_, 매수호가1_ ):
+        self.kospi200지수=kospi200지수_
+        self.내재변동성=내재변동성_
+
+        self.호가시간=호가시간_
         self.단축코드=단축코드_
+        self.매도호가1=매도호가1_
+        self.매수호가1=매수호가1_
+        self.이론가=이론가_
         
         found = False
         for n,s in enumerate(self.optHogaChart):
@@ -88,6 +115,7 @@ class OptData(Subject):
             #self.optHogaChart = [self.optHogaChart,[단축코드_, 매도호가1_, 매수호가1_]] 
             self.optHogaChart.append([단축코드_, 매도호가1_, 매수호가1_])
         self.optChanged()
+
 
     def print_opt(self):
         print(self.optHogaChart) 
