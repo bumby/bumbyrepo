@@ -5,22 +5,39 @@ Created on Tue Jun 18 21:23:04 2019
 @author: USER
 """
 import numpy as np
-
 import pandas as pd
 #import pandas_datareader.data as web
 #from pandas import Series, DataFrame
 
-import datetime
 import sqlite3
 from matplotlib import pyplot as plt
-#start = datetime.datetime(2010,1 ,1)
-#end = datetime.datetime(2016,6, 12)
-#df = web.DataReader("078930.KS", "yahoo", start, end)
 
-class DBalalysis:
+from observer import *
+
+
+class DBalalysis(Observer):
     def __init__(self):
-        timer = 0;
+        print("Option Analysis has been started")
         
+      #------------------------------observer implementaion ---------------        
+    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
+        self.호가시간=호가시간_
+        self.단축코드=단축코드_
+        self.매도호가1=매도호가1_
+        self.매수호가1=매수호가1_
+         
+        self.extract_call_gap()
+        self.display()
+
+    def register_subject(self, subject):
+        self.subject = subject
+        self.subject.register_observer(self)
+
+    def display(self):
+        print ("")
+#----------------------------------------------------------     
+          
+   
     def extract_call_gap(self, df, trigger_price, atms_storage):
     
         offerho1 = df['offerho1']

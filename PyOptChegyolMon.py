@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 16 13:24:12 2019
+Created on Fri Aug 16 14:42:48 2019
 
 @author: USER
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct  8 21:07:41 2018
-
-@author: USER
-"""
 import sys
 from PyQt5.QtWidgets import *
 import win32com.client
@@ -19,9 +13,6 @@ from pandas import DataFrame
 #from threading import Timer,Thread,Event
 import time
 from bestConnect import *
-
-from subject import *
-from observer import *
 
 
 class XAQueryEventHandlerT2301:
@@ -33,30 +24,10 @@ class XAQueryEventHandlerT2301:
 
        
             
-#class PyOptHogaMon:
-class PyOptHogaMon(Observer):
+class PyOptChegyolMon:
     def __init__(self):
         print("optmon has created")
         self.count = 0
-        
-      
-        
-#------------------------------observer implementaion ---------------        
-    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
-        self.호가시간=호가시간_
-        self.단축코드=단축코드_
-        self.매도호가1=매도호가1_
-        self.매수호가1=매수호가1_
-         
-        self.display()
-
-    def register_subject(self, subject):
-        self.subject = subject
-        self.subject.register_observer(self)
-
-    def display(self):
-        print ('호가시간:',self.호가시간, '단축코드:',self.단축코드 ,' 매도호가1:',self.매도호가1, ' 매수호가1:',self.매수호가1)
-#----------------------------------------------------------     
         
 #       self.comm_connect()
 #   self.get_code_list()
@@ -87,7 +58,7 @@ class PyOptHogaMon(Observer):
         gmvolume = instXAQueryT2301.GetFieldData("t2301OutBlock", "gmvolume",0)
         gmshcode = instXAQueryT2301.GetFieldData("t2301OutBlock", "gmshcode",0)
         
-#        print(histimpv, jandatecnt,cimpv,  pimpv )
+        print(histimpv, jandatecnt,cimpv,  pimpv )
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock1")
         
@@ -146,8 +117,8 @@ class PyOptHogaMon(Observer):
             ohlcv['impv'].append(impv)
             ohlcv['gmprice'].append(gmprice)
             
-#           print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
-            self.subject.change_optprice(timevl,optcode,offerho1,bidho1)
+            print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
+        
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock2")
         
@@ -206,10 +177,9 @@ class PyOptHogaMon(Observer):
             ohlcv2['impv'].append(impv2)
             ohlcv2['gmprice'].append(gmprice)
                  
-#            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
-            self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12)
+            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
         
-#        self.subject.print_opt()
+        
         return ohlcv, ohlcv2    
     
 #--------------------------
@@ -221,33 +191,54 @@ class PyOptHogaMon(Observer):
         이베스트 서버에서 ReceiveRealData 이벤트 받으면 실행되는 event handler
         """
         self.count += 1
-        호가시간 = self.GetFieldData("OutBlock", "hoime")
+        체결시간 = self.GetFieldData("OutBlock", "chetime")
+        전일대비구분 = self.GetFieldData("OutBlock", "sign")
+        전일대비 = self.GetFieldData("OutBlock", "change")
+        등락율 = self.GetFieldData("OutBlock", "drate")
+        현재가 = self.GetFieldData("OutBlock", "price")
+        시가 = self.GetFieldData("OutBlock", "open")
+        고가 = self.GetFieldData("OutBlock", "high")
+        저가 = self.GetFieldData("OutBlock", "low")
+        체결구분 = self.GetFieldData("OutBlock", "cgubun")
+        체결량 = self.GetFieldData("OutBlock", "cvolume")
+        누적거래량 = self.GetFieldData("OutBlock", "volume")
+        누적거래대금 = self.GetFieldData("OutBlock", "value")
+        매도누적체결량 = self.GetFieldData("OutBlock", "mdvolume")
+        매도누적체결건수 = self.GetFieldData("OutBlock", "mdchecnt")
+    
+        매수누적체결량 = self.GetFieldData("OutBlock", "msvolume")
+        매수누적체결건수 = self.GetFieldData("OutBlock", "mschecnt")
+        체결강도 = self.GetFieldData("OutBlock", "cpower")
         매도호가1 = self.GetFieldData("OutBlock", "offerho1")
         매수호가1 = self.GetFieldData("OutBlock", "bidho1")
-        매도호가2 = self.GetFieldData("OutBlock", "offerho2")
-        매수호가2 = self.GetFieldData("OutBlock", "bidho2")
+        미결제약정수량 = self.GetFieldData("OutBlock", "openyak")
+        KOSPI200지수 = self.GetFieldData("OutBlock", "k200jisu")
+        KOSPI등가 = self.GetFieldData("OutBlock", "eqva")
+        
+        이론가 = self.GetFieldData("OutBlock", "theoryprice")
+        내재변동성 = self.GetFieldData("OutBlock", "impv")
+        미결제약정증감 = self.GetFieldData("OutBlock", "openyakcha")
+        시간가치 = self.GetFieldData("OutBlock", "timevalue")
+        
+        장운영정보 = self.GetFieldData("OutBlock", "jgubun")
+        전일동시간대거래량 = self.GetFieldData("OutBlock", "jnilvolume")
         단축코드 = self.GetFieldData("OutBlock", "optcode")
         
-        # 변경 
-        self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1)
-        print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2)
-      
-
-
-
-
+        
+        print("체결발생", self.count, tr_code, 체결시간, 현재가, 시가, 매도호가1, 매수호가1, 단축코드, 장운영정보, KOSPI200지수)
+        
 
     def start(self,  Option_expiration_mon):
         """
         이베스트 서버에 실시간 data 요청함.
         """
         optresult, optresult2 = self.get_opt_chart(Option_expiration_mon)
- 
-        self.ResFileName = "C:\\eBEST\\xingAPI\\Res\\OH0.res" # RES 파일 등록
+        self.ResFileName = "C:\\eBEST\\xingAPI\\Res\\OC0.res" # RES 파일 등록
         #self.SetFieldData("InBlock", "optcode", optcode)
         #self.AdviseRealData() # 실시간데이터 요청
  
         for i in optresult['optcode']:
+            print(i)
             self.add_item(i)
         
         for i in optresult2['optcode']:
@@ -256,7 +247,10 @@ class PyOptHogaMon(Observer):
         
 
     def add_item(self, optcode):
+
         # 실시간데이터 요청 종목 추가
+        #self.SetFieldData("InBlock", "shcode", stockcode)
+        print("flag",optcode)
         self.SetFieldData("InBlock", "optcode", optcode)
         self.AdviseRealData()
 
@@ -281,11 +275,12 @@ if __name__ == "__main__":
     best = BestAccess()                        #Login class 생성
     accounts_list = best.comm_connect(secinfo) #Login 
 
-    optdata =  OptData() #ㅐ
-    optmon  = PyOptHogaMon.get_instance()
-        #opthogamon observer 등록
-    optmon.register_subject(optdata)
-    optmon.start("201910")
-    
+    pyoptchegyolmon = PyOptChegyolMon.get_instance()
+    #optresult, optresult2 = pyoptmon.get_opt_chart("201908")
+    pyoptchegyolmon.start("201909")
+    #pyoptmon.get_list_code()
+    #pyoptmon.get_opt_chart()
+    #pyoptmon.run()
 
-   
+    while pyoptchegyolmon.count < 500:
+        pythoncom.PumpWaitingMessages()
