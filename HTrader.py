@@ -52,7 +52,6 @@ class MyWindow(QMainWindow, form_class, Observer):
         self.setupUi(self)
 #        #자신을 observer로 등록
         self.register_subject(optdata)  
-
      
         
         
