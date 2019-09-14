@@ -4,6 +4,7 @@
 import unittest
 from subject import *
 
+from PyOptHogaMonSimul import *
 
 
 
@@ -48,7 +49,13 @@ class optChartTest(unittest.TestCase):
         self.assertEqual(len(c), 2)
 
         
- 
+class HogaMonSimulTest(unittest.TestCase):
+    
+    def test_dataload(self):
+        self.optmon = PyOptHogaMonSimul.get_instance()
+        c = self.optmon.getSampleSize()
+        print(c)
+        self.assertEqual(c,4)
 
 if __name__ == '__main__':
     unittest.main()

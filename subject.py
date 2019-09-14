@@ -52,15 +52,7 @@ class OptData(Subject):
         #optchart[m_optCode] = [0:hogaTime, 1:offerho1, 2:bidho1, 3:현재가, 4:theoryPrice, 5:Iv]
         
         self.optChart = {}
-        
-              
-        #현재 호가 정보 
-        self.m_optCode = ""
-        self.offerho1 = 0
-        self.bidho1 = 0
-        self.theoryPrice = 0
-        self.Iv = 0
-
+  
         #현재 kospi정보 
         self.hogaTime = 0
         self.kospi200Index = 0
@@ -82,60 +74,60 @@ class OptData(Subject):
 
         return "observer does not exist."
 
-    def notify_observers(self): #옵저버에게 알리는 부분 (옵저버리스트에 있는 모든 옵저버들의 업데이트 메서드 실행)
+    def notify_observers(self): 
+        """
+        notyfy observer about the change event 
+        """
         for observer in self._observer_list:
-            observer.update( self.hogaTime, self.m_optCode, self.offerho1, self.bidho1)
+            observer.update(self.optChart[self.currentCode]["hogaTime"], self.currentCode, self.optChart[self.currentCode]["offerho1"], self.optChart[self.currentCode]["bidho1"]) 
+                    
 
    
     def optChanged(self):
-        self.notify_observers() #감정이 변하면 옵저버에게 알립니다.
+        self.notify_observers()
 
     
     def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_ ):
-        self.hogaTime=hogaTime_
-        self.m_optCode=m_optCode_
-        self.offerho1=offerho1_
-        self.bidho1=bidho1_
-      
-         
-#        found = False
-#        for n,s in enumerate(self.optChart):
-#            if m_optCode_ in s:
-#                self.optChart[n] = [m_optCode_, offerho1_, bidho1_ ]
-#                found = True
-#        if found == False:
-#            self.optChart.append([m_optCode_, offerho1_, bidho1_])
-#        
+        """
+        From hoga RC change_optprice changes the optchart which include hogaTime_, offerprice bid price
+        changed kospi price, IV also can added new data
+        """
+        self.currentCode = m_optCode_ 
+        
         opt = {}
+        if m_optCode_ in self.optChart:
+            opt = self.optChart[m_optCode_]             
+        else:
+            
+            opt["theoryPrice"] = ""
+            opt["Iv"] = "" 
+            
         opt["hogaTime"] = hogaTime_
-    #    opt["m_optCode"] = m_optCode_
+        opt["kospi200Index"] = self.kospi200Index
         opt["offerho1"]= offerho1_
         opt["bidho1"]= bidho1_
         
         self.optChart[m_optCode_] = opt
-        
         self.optChanged()
 
-    def change_base(self, hogaTime_, kospi200Index_, theoryPrice_, m_optCode_, Iv_, offerho1_, bidho1_ ):
+    def change_base(self, hogaTime_, m_optCode_, kospi200Index_, theoryPrice_,  Iv_, offerho1_, bidho1_ ):
+       
+    
+        self.currentCode = m_optCode_ 
         self.kospi200Index=kospi200Index_
-        self.Iv=Iv_
-
-        self.hogaTime=hogaTime_
-        self.m_optCode=m_optCode_
-        self.offerho1=offerho1_
-        self.bidho1=bidho1_
-        self.theoryPrice=theoryPrice_
+          
+        opt = {}
+        opt["hogaTime"] = hogaTime_
+        opt["kospi200Index"] = self.kospi200Index
+        opt["theoryPrice"] = theoryPrice_
+        opt["Iv"] = Iv_ 
+        opt["offerho1"]= offerho1_
+        opt["bidho1"]= bidho1_
         
-        found = False
-        for n,s in enumerate(self.optChart):
-            if m_optCode_ in s:
-                self.optChart[n] = [m_optCode_, offerho1_, bidho1_ ]
-                found = True
-        if found == False:
-            #self.optChart = [self.optChart,[m_optCode_, offerho1_, bidho1_]] 
-            self.optChart.append([m_optCode_, offerho1_, bidho1_])
-        self.optChanged()
-
+    
+        self.optChart[m_optCode_] = self.opt
+        self.optChanged()       
+        
 
     def get_optChart(self):
         return self.optChart
