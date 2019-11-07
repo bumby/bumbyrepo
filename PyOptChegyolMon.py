@@ -277,7 +277,7 @@ if __name__ == "__main__":
 
     pyoptchegyolmon = PyOptChegyolMon.get_instance()
     #optresult, optresult2 = pyoptmon.get_opt_chart("201908")
-    pyoptchegyolmon.start("201909")
+    pyoptchegyolmon.start("201912")
     #pyoptmon.get_list_code()
     #pyoptmon.get_opt_chart()
     #pyoptmon.run()

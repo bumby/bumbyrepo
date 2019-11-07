@@ -114,5 +114,5 @@ if __name__ == "__main__":
     print(optmon.getSampleSize())
         #opthogamon observer 등록
     optmon.register_subject(optdata)
-    optmon.start("201909")
+    optmon.start("201912")
 

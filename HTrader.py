@@ -88,25 +88,25 @@ class MyWindow(QMainWindow, form_class, Observer):
         print ("Gui updated")
 
     def updateGuiOptHoga(self):
-        itemcount = len(self.subject.optHogaChart)
-        for j in range(itemcount):
-          #  item = QTableWidgetItem(balcv[j][])
-            item = QTableWidgetItem(self.subject.optHogaChart[j][0])
-            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
-            self.tableWidget_2.setItem(j,0,item)  
-          
-            item = QTableWidgetItem(self.subject.optHogaChart[j][1])
-            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
-            self.tableWidget_2.setItem(j,1,item)
-            
-            item = QTableWidgetItem(self.subject.optHogaChart[j][2])
-            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
-            self.tableWidget_2.setItem(j,2,item)
-
-        self.tableWidget_2.setRowCount(itemcount)
-        
-        print("on construction print", itemcount)
-
+#        itemcount = len(self.subject.optHogaChart)
+#        for j in range(itemcount):
+#          #  item = QTableWidgetItem(balcv[j][])
+#            item = QTableWidgetItem(self.subject.optHogaChart[j][0])
+#            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+#            self.tableWidget_2.setItem(j,0,item)  
+#          
+#            item = QTableWidgetItem(self.subject.optHogaChart[j][1])
+#            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+#            self.tableWidget_2.setItem(j,1,item)
+#            
+#            item = QTableWidgetItem(self.subject.optHogaChart[j][2])
+#            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+#            self.tableWidget_2.setItem(j,2,item)
+#
+#        self.tableWidget_2.setRowCount(itemcount)
+#        
+#        print("on construction print", itemcount)
+        pass
 #----------------------------------------------------------------------------------------------------------------------     
           
     

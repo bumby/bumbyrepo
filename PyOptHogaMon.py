@@ -146,7 +146,7 @@ class PyOptHogaMon(Observer):
             ohlcv['impv'].append(impv)
             ohlcv['gmprice'].append(gmprice)
             
-#           print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
+            print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
             self.subject.change_optprice(timevl,optcode,offerho1,bidho1)
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock2")
@@ -206,7 +206,7 @@ class PyOptHogaMon(Observer):
             ohlcv2['impv'].append(impv2)
             ohlcv2['gmprice'].append(gmprice)
                  
-#            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
+            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
             self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12)
         
 #        self.subject.print_opt()
@@ -285,7 +285,7 @@ if __name__ == "__main__":
     optmon  = PyOptHogaMon.get_instance()
         #opthogamon observer 등록
     optmon.register_subject(optdata)
-    optmon.start("201910")
+    optmon.start("201912")
     
 
    

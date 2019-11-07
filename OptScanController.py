@@ -10,8 +10,8 @@ from subject import *
 
 
 from accessDB import *
-#from PyOptHogaMon import *
-from PyOptHogaMonSimul import *
+from PyOptHogaMon import *
+#from PyOptHogaMonSimul import *
 
 class OptScanContoller(ControllerInterface):
     
@@ -23,12 +23,12 @@ class OptScanContoller(ControllerInterface):
         
         
          #option monitor 생성 및 등록                
-        self.Option_expiration_mon = "201909"
+        self.Option_expiration_mon = "201912"
                 
         #simulation
-        self.optmon = PyOptHogaMonSimul.get_instance()
+        #self.optmon = PyOptHogaMonSimul.get_instance()
         #real data
-        #self.optmon = PyOptHogaMon.get_instance()
+        self.optmon = PyOptHogaMon.get_instance()
         
         #opthogamon observer 등록
         self.optmon.register_subject(optdata)
