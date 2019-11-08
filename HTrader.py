@@ -88,28 +88,40 @@ class MyWindow(QMainWindow, form_class, Observer):
         print ("Gui updated")
 
     def updateGuiOptHoga(self):
-#        itemcount = len(self.subject.optHogaChart)
-#        for j in range(itemcount):
-#          #  item = QTableWidgetItem(balcv[j][])
-#            item = QTableWidgetItem(self.subject.optHogaChart[j][0])
-#            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
-#            self.tableWidget_2.setItem(j,0,item)  
-#          
-#            item = QTableWidgetItem(self.subject.optHogaChart[j][1])
-#            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
-#            self.tableWidget_2.setItem(j,1,item)
-#            
-#            item = QTableWidgetItem(self.subject.optHogaChart[j][2])
-#            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
-#            self.tableWidget_2.setItem(j,2,item)
-#
-#        self.tableWidget_2.setRowCount(itemcount)
-#        
-#        print("on construction print", itemcount)
-        pass
-#----------------------------------------------------------------------------------------------------------------------     
+         
+        optHogaChart = self.subject.get_optChart()
+        itemcount = len(optHogaChart)
+        row_no = 0
+
+        for j in sorted(optHogaChart):
+          #  item = QTableWidgetItem(balcv[j][])
+            row_no += 1
+            item = QTableWidgetItem(j)
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(row_no,0,item)  
           
-    
+            item = QTableWidgetItem(optHogaChart[j]['offerho1'])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(row_no,1,item)
+            
+            item = QTableWidgetItem(optHogaChart[j]['bidho1'])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(row_no,2,item)
+            
+            item = QTableWidgetItem(self.subject.envStatus["kospi200Index"])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(row_no,3,item)
+
+            item = QTableWidgetItem(self.subject.envStatus["옵션잔존일"])
+            item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
+            self.tableWidget_2.setItem(row_no,4,item)
+
+        self.tableWidget_2.setRowCount(itemcount)
+        
+        print("on construction print", itemcount)
+#        pass
+#----------------------------------------------------------------------------------------------------------------------     
+       
     def code_changed(self):
         print("code changed")
         code= self.lineEdit.text()
@@ -119,9 +131,8 @@ class MyWindow(QMainWindow, form_class, Observer):
 
     def StartButton(self):
         self.controller.Start()
-        
-
-
+   
+    
     def EndButton(self):
         self.controller.End()
 

@@ -54,10 +54,8 @@ class OptData(Subject):
         self.optChart = {}
   
         #현재 kospi정보 
-        self.hogaTime = 0
-        self.kospi200Index = 0
-        self.Hv = 0       
-                
+        self.envStatus = {"kospi200Index":"0", "HV":"0", "옵션잔존일":"0"}        
+        
    
         
     def register_observer(self, observer):
@@ -87,7 +85,12 @@ class OptData(Subject):
         self.notify_observers()
 
     
-    def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_ ):
+    def change_envStatus(self,key,value):
+        self.envStatus[key] = value 
+        self.optChanged()
+        
+    
+    def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_):
         """
         From hoga RC change_optprice changes the optchart which include hogaTime_, offerprice bid price
         changed kospi price, IV also can added new data
@@ -98,36 +101,20 @@ class OptData(Subject):
         if m_optCode_ in self.optChart:
             opt = self.optChart[m_optCode_]             
         else:
-            
             opt["theoryPrice"] = ""
             opt["Iv"] = "" 
-            
+        
+        
         opt["hogaTime"] = hogaTime_
-        opt["kospi200Index"] = self.kospi200Index
         opt["offerho1"]= offerho1_
         opt["bidho1"]= bidho1_
+        
         
         self.optChart[m_optCode_] = opt
         self.optChanged()
+        
+        print("optdata modified !!!")
 
-    def change_base(self, hogaTime_, m_optCode_, kospi200Index_, theoryPrice_,  Iv_, offerho1_, bidho1_ ):
-       
-    
-        self.currentCode = m_optCode_ 
-        self.kospi200Index=kospi200Index_
-          
-        opt = {}
-        opt["hogaTime"] = hogaTime_
-        opt["kospi200Index"] = self.kospi200Index
-        opt["theoryPrice"] = theoryPrice_
-        opt["Iv"] = Iv_ 
-        opt["offerho1"]= offerho1_
-        opt["bidho1"]= bidho1_
-        
-    
-        self.optChart[m_optCode_] = self.opt
-        self.optChanged()       
-        
 
     def get_optChart(self):
         return self.optChart

@@ -14,6 +14,7 @@ from pandas import DataFrame
 import time
 from bestConnect import *
 
+from subject import *
 
 class XAQueryEventHandlerT2301:
     query_state = 0
@@ -28,9 +29,14 @@ class PyOptChegyolMon:
     def __init__(self):
         print("optmon has created")
         self.count = 0
+
+
+#temporary
+    def register_subject(self, subject):
+        self.subject = subject
+        #self.subject.register_observer(self)
         
-#       self.comm_connect()
-#   self.get_code_list()
+        
 
 #--------------------------
 # t2301  차트
@@ -179,7 +185,10 @@ class PyOptChegyolMon:
                  
             print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
         
-        
+        #옵션 잔존일 측정
+        self.subject.change_envStatus("HV",histimpv)
+        self.subject.change_envStatus("kospi200Index",gmprice)
+        self.subject.change_envStatus("옵션잔존일",jandatecnt)
         return ohlcv, ohlcv2    
     
 #--------------------------
@@ -224,7 +233,8 @@ class PyOptChegyolMon:
         전일동시간대거래량 = self.GetFieldData("OutBlock", "jnilvolume")
         단축코드 = self.GetFieldData("OutBlock", "optcode")
         
-        
+        self.subject.change_envStatus("kospi200Index",KOSPI200지수)
+        self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1)
         print("체결발생", self.count, tr_code, 체결시간, 현재가, 시가, 매도호가1, 매수호가1, 단축코드, 장운영정보, KOSPI200지수)
         
 

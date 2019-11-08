@@ -10,6 +10,7 @@ import pandas as pd
 #from pandas import Series, DataFrame
 
 import sqlite3
+import math
 from matplotlib import pyplot as plt
 
 from observer import *
@@ -26,6 +27,7 @@ class DBalalysis(Observer):
         self.매도호가1=매도호가1_
         self.매수호가1=매수호가1_
          
+        self.scanTargeOpt()
         self.extract_call_gap()
         self.display()
 
@@ -37,6 +39,15 @@ class DBalalysis(Observer):
         print ("")
 #----------------------------------------------------------     
           
+    def scanTargetOpt(self):
+        kospi200price = pd.to_numeric(self.subject.envStatus['kospi200Index'])
+        jandatecnt = pd.to_numeric(self.subject.envStatus['옵션잔존일'])
+        HV =  pd.to_numeric(self.subject.envStatus['HV'])
+        sigma = HV/100.0*math.sqrt(jandatecnt/365.0)
+        self.upperTarget = math.exp(math.log(kospi200price)+sigma*1.3) #1.3은 normal distribution 90% 범위
+        self.lowerTarget = math.exp(math.log(kospi200price)-sigma*1.3) #1.3은 normal distribution 90% 범위
+        
+        
    
     def extract_call_gap(self, df, trigger_price, atms_storage):
     

@@ -11,7 +11,10 @@ from subject import *
 
 from accessDB import *
 from PyOptHogaMon import *
+from PyOptChegyolMon import *
 #from PyOptHogaMonSimul import *
+
+import time
 
 class OptScanContoller(ControllerInterface):
     
@@ -40,13 +43,20 @@ class OptScanContoller(ControllerInterface):
         self.access_db.register_subject(optdata)     
         
         
-       
+              
         
+        
+        #체결 생성 등록
+        self.chekyolmon  = PyOptChegyolMon.get_instance()
+        self.chekyolmon.register_subject(optdata)
+         
+       
     def Start(self):
-        print('start has been pushed')
+        print('start has been pushed')  
         self.optmon.start(self.Option_expiration_mon)  
-  
-    
+        time.sleep(1)
+        self.chekyolmon.start(self.Option_expiration_mon)
+        
 
     
     def End(self):
