@@ -24,11 +24,11 @@ class accessDB(Observer):
         
 #------------------------------observer implementaion ---------------        
       
-    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
-        self.단축코드=단축코드_
-        self.호가시간=호가시간_
-        self.매도호가1=매도호가1_
-        self.매수호가1=매수호가1_
+    def update(self, hogaTime_, optCode_, offerho1_, bidho1_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
+        self.optCode=optCode_
+        self.hogaTime=hogaTime_
+        self.offerho1=offerho1_
+        self.bidho1=bidho1_
 
         
         self.display()
@@ -46,13 +46,13 @@ class accessDB(Observer):
     def saveToDB(self):
        
         ohlcv = {'hogatime':[], 'optcode':[], 'offerho1':[], 'bidho1':[]}
-        ohlcv['hogatime'].append(self.호가시간)
-        ohlcv['optcode'].append(self.단축코드)
-        ohlcv['offerho1'].append(self.매도호가1)
-        ohlcv['bidho1'].append(self.매수호가1)
+        ohlcv['hogatime'].append(self.hogaTime)
+        ohlcv['optcode'].append(self.optCode)
+        ohlcv['offerho1'].append(self.offerho1)
+        ohlcv['bidho1'].append(self.bidho1)
     
       
         opt_hoga_change = pd.DataFrame(ohlcv, columns = ['optcode','offerho1','bidho1'], index=ohlcv['hogatime'])
         
-        opt_hoga_change.to_sql(self.opt_hoga_table_name, self.con, if_exists='append') #속도향상 필요
+        opt_hoga_change.to_sql(self.opt_hoga_table_name, self.con, if_exists='append') #speedup required
  

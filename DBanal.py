@@ -46,7 +46,84 @@ class DBalalysis(Observer):
         sigma = HV/100.0*math.sqrt(jandatecnt/365.0)
         self.upperTarget = math.exp(math.log(kospi200price)+sigma*1.3) #1.3은 normal distribution 90% 범위
         self.lowerTarget = math.exp(math.log(kospi200price)-sigma*1.3) #1.3은 normal distribution 90% 범위
-        
+
+    def optcode_gen(self, optstrike, expirationdate, putncall):
+
+        # target price  
+
+
+
+        #put and sell code and kospi200
+        if putncall == "call" :
+            opt_putncall_code = "201"
+            price_divide = int(math.floor(optstrike/2.5))
+            opt_index = int((price_divide+1)*2.5)
+            opt_index_str = str(opt_index)
+            print(opt_index_str)
+        elif putncall == "put" :
+            opt_putncall_code = "301"
+            price_divide = int(math.floor(optstrike/2.5))
+            opt_index = int((price_divide)*2.5)
+            opt_index_str = str(opt_index)
+            print(opt_index_str)
+        else :
+            print("no such code")
+            raise Exception('no such code')  
+
+
+        #target expiration year
+        expiration_year = expirationdate[0:4]
+        if  expiration_year=="2019" :
+            expiration_year_code = "P"
+        elif expiration_year=="2020" :
+            expiration_year_code = "Q"
+        elif expiration_year=="2021" :
+            expiration_year_code = "R"
+        elif expiration_year=="2022" :
+            expiration_year_code = "S"
+        elif expiration_year=="2023" :
+            expiration_year_code = "T"
+        elif expiration_year=="2024" :
+            expiration_year_code = "V"
+        elif expiration_year=="2025" :
+            expiration_year_code = "W"    
+        else :
+            print("option code is available only for 2025")
+            raise Exception("option code is available only for 2025")
+
+        #target expiration month
+        expiration_month  = expirationdate[4:6]
+        if  expiration_month=="01" :
+            expiration_month_code = "1"
+        elif expiration_month=="02" :
+            expiration_month_code = "2"
+        elif expiration_month=="03" :
+            expiration_month_code = "3"
+        elif expiration_month=="04" :
+            expiration_month_code = "4"
+        elif expiration_month=="05" :
+            expiration_month_code = "5"
+        elif expiration_month=="06" :
+            expiration_month_code = "6"
+        elif expiration_month=="07" :
+            expiration_month_code = "7"    
+        elif expiration_month=="08" :
+            expiration_month_code = "8"
+        elif expiration_month=="09" :
+            expiration_month_code = "9"
+        elif expiration_month=="10" :
+            expiration_month_code = "A"
+        elif expiration_month=="11" :
+            expiration_month_code = "B" 
+        elif expiration_month=="12" :
+            expiration_month_code = "C"
+        else :
+            print("choose only for 1~12")
+            raise Exception("choose only for 1~12")
+
+        optcode = opt_putncall_code + expiration_year_code+ expiration_month_code + opt_index_str
+        print(optcode)
+        return optcode
         
    
     def extract_call_gap(self, df, trigger_price, atms_storage):

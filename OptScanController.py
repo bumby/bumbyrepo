@@ -42,8 +42,7 @@ class OptScanContoller(ControllerInterface):
         self.access_db = accessDB()
         self.access_db.register_subject(optdata)     
         
-        
-              
+         
         
         
         #체결 생성 등록
