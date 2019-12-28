@@ -45,6 +45,7 @@ class OptScanContoller(ControllerInterface):
         self.access_db.register_subject(optdata)     
      
         
+                     
         #체결 생성 등록
         self.chekyolmon  = PyOptChegyolMon.get_instance()
         self.chekyolmon.register_subject(optdata)
