@@ -24,11 +24,12 @@ class accessDB(Observer):
         
 #------------------------------observer implementaion ---------------        
       
-    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
+    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
         self.단축코드=단축코드_
         self.호가시간=호가시간_
         self.매도호가1=매도호가1_
         self.매수호가1=매수호가1_
+        self.이론가 = 이론가_
 
         
         self.display()
@@ -39,7 +40,8 @@ class accessDB(Observer):
         self.subject.register_observer(self)
 
     def display(self):
-        print ('DB updated')
+        #print ('DB updated')
+        pass
 
 
 #----------------------------------------------------------     

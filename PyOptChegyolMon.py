@@ -35,9 +35,9 @@ class PyOptChegyolMon:
     def register_subject(self, subject):
         self.subject = subject
         #self.subject.register_observer(self)
-        
-        
 
+    
+        
 #--------------------------
 # t2301  차트
 #--------------------------  
@@ -234,8 +234,8 @@ class PyOptChegyolMon:
         단축코드 = self.GetFieldData("OutBlock", "optcode")
         
         self.subject.change_envStatus("kospi200Index",KOSPI200지수)
-        self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1)
-        print("체결발생", self.count, tr_code, 체결시간, 현재가, 시가, 매도호가1, 매수호가1, 단축코드, 장운영정보, KOSPI200지수)
+        self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1, 이론가)
+        #print("체결발생", self.count, tr_code, 체결시간, 현재가, 시가, 매도호가1, 매수호가1, 단축코드, 장운영정보, KOSPI200지수)
         
 
     def start(self,  Option_expiration_mon):
@@ -254,10 +254,9 @@ class PyOptChegyolMon:
         for i in optresult2['optcode']:
             self.add_item(i)
             
-        
+       
 
     def add_item(self, optcode):
-
         # 실시간데이터 요청 종목 추가
         #self.SetFieldData("InBlock", "shcode", stockcode)
         print("flag",optcode)
@@ -286,7 +285,6 @@ if __name__ == "__main__":
     accounts_list = best.comm_connect(secinfo) #Login 
 
     pyoptchegyolmon = PyOptChegyolMon.get_instance()
-    #optresult, optresult2 = pyoptmon.get_opt_chart("201908")
     pyoptchegyolmon.start("201912")
     #pyoptmon.get_list_code()
     #pyoptmon.get_opt_chart()

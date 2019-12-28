@@ -72,15 +72,18 @@ class OptData(Subject):
 
         return "observer does not exist."
 
+
     def notify_observers(self): 
         """
         notyfy observer about the change event 
         """
+        
+        #호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가
+        
         for observer in self._observer_list:
-            observer.update(self.optChart[self.currentCode]["hogaTime"], self.currentCode, self.optChart[self.currentCode]["offerho1"], self.optChart[self.currentCode]["bidho1"]) 
-                    
-
-   
+            observer.update(self.optChart[self.currentCode]["hogaTime"], self.currentCode, self.optChart[self.currentCode]["offerho1"], self.optChart[self.currentCode]["bidho1"], self.optChart[self.currentCode]["theoryPrice"]) 
+             
+  
     def optChanged(self):
         self.notify_observers()
 
@@ -90,7 +93,7 @@ class OptData(Subject):
         self.optChanged()
         
     
-    def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_):
+    def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_, theoryprice_ ):
         """
         From hoga RC change_optprice changes the optchart which include hogaTime_, offerprice bid price
         changed kospi price, IV also can added new data
@@ -102,22 +105,29 @@ class OptData(Subject):
             opt = self.optChart[m_optCode_]             
         else:
             opt["theoryPrice"] = ""
-            opt["Iv"] = "" 
-        
+            opt["Iv"] = ""
+            
+     
         
         opt["hogaTime"] = hogaTime_
-        opt["offerho1"]= offerho1_
-        opt["bidho1"]= bidho1_
+        opt["offerho1"] = offerho1_
+        opt["bidho1"] = bidho1_
         
-        
+        if theoryprice_ != "":
+            opt["theoryPrice"] = theoryprice_
+
+    
         self.optChart[m_optCode_] = opt
         self.optChanged()
         
-        print("optdata modified !!!")
+        #print("optdata modified !!!")
 
 
     def get_optChart(self):
         return self.optChart
 
+    def get_optEnvStatus(self, key):
+        return self.envStatus[key]
+    
     def print_opt(self):
         print(self.optChart) 

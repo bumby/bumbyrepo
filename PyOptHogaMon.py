@@ -42,11 +42,12 @@ class PyOptHogaMon(Observer):
       
         
 #------------------------------observer implementaion ---------------        
-    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
+    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
         self.호가시간=호가시간_
         self.단축코드=단축코드_
         self.매도호가1=매도호가1_
         self.매수호가1=매수호가1_
+        self.이론가 = 이론가_
          
         self.display()
 
@@ -55,7 +56,8 @@ class PyOptHogaMon(Observer):
         self.subject.register_observer(self)
 
     def display(self):
-        print ('호가시간:',self.호가시간, '단축코드:',self.단축코드 ,' 매도호가1:',self.매도호가1, ' 매수호가1:',self.매수호가1)
+        #print ('호가시간:', self.호가시간, '단축코드:', self.단축코드 , '매도호가1:', self.매도호가1,'매수호가1:', self.매수호가1, '이론가:', self.이론가)
+        pass
 #----------------------------------------------------------     
         
 #       self.comm_connect()
@@ -146,8 +148,8 @@ class PyOptHogaMon(Observer):
             ohlcv['impv'].append(impv)
             ohlcv['gmprice'].append(gmprice)
             
-            print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
-            self.subject.change_optprice(timevl,optcode,offerho1,bidho1)
+            #print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
+            self.subject.change_optprice(timevl,optcode,offerho1,bidho1,"")
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock2")
         
@@ -206,8 +208,8 @@ class PyOptHogaMon(Observer):
             ohlcv2['impv'].append(impv2)
             ohlcv2['gmprice'].append(gmprice)
                  
-            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
-            self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12)
+            #print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
+            self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12,"")
         
 #        self.subject.print_opt()
         return ohlcv, ohlcv2    
@@ -229,8 +231,8 @@ class PyOptHogaMon(Observer):
         단축코드 = self.GetFieldData("OutBlock", "optcode")
         
         # 변경 
-        self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1)
-        print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2)
+        self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,"")
+        #print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2)
       
 
 
