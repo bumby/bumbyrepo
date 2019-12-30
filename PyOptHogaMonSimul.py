@@ -14,7 +14,7 @@ import time
 from time import sleep
 from timeManager import *
 from kospi_history import *
-
+from optPurse import *
 
 class PyOptHogaMonSimul(Observer):
     """
@@ -35,6 +35,9 @@ class PyOptHogaMonSimul(Observer):
         self.dbanal = DBalalysis('2')
         self.tmanager = timeManager()
         self.kospi_info = KOSPIHISTORYINFO()
+        
+        
+        self.optpurse = optPurse()
         
                         
     def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): 
@@ -88,11 +91,15 @@ class PyOptHogaMonSimul(Observer):
                 target_put_opt_code = self.dbanal.optcode_gen(lowerTarget,expire_month,'put')
                 print(k, self.df["현재지수"][index],curr_year+curr_month, cur_kospi_price,expire_month,target_call_opt_code, target_put_opt_code )#,k[0:4])
                
+                              
+                
                 
                 try:
                     calloptdata = pd.read_csv("./data/K"+target_call_opt_code+".csv",sep=",")
                     matchingdayindex = (calloptdata[calloptdata['일자'] == currday_dash])
                     print(matchingdayindex.iloc[0]['시가'])
+                    
+                    self.optpurse.SellOption(target_put_opt_code,matchingdayindex.iloc[0]['시가'],1)
                     #print('현재날짜',currday_dash)
     
                 except:
@@ -104,10 +111,26 @@ class PyOptHogaMonSimul(Observer):
                     matchingdayindex = (putoptdata[putoptdata['일자'] == currday_dash])
                     print(matchingdayindex.iloc[0]['시가'])
                     #print('현재날짜',currday_dash)
+                    
+                    self.optpurse.SellOption(target_put_opt_code,matchingdayindex.iloc[0]['시가'],1)
                 except:
                     print("option has not been solved")
     #           
                 
+    
+                #날짜 검색해서 만기일이면 가지고 있는 옵션 결산
+                current_year_month = curr_year+curr_month
+                if self.kospi_info.get_expiration_date(current_year_month) == currday_dash:
+                      code = self.optpurse.ExpirationOptionScan(current_year_month)
+                      print("코드:",code)
+                      
+                      for i in code:
+                          self.optpurse.ClearingOption(pd.to_numeric(cur_kospi_price),i)
+                      
+                      
+                      print("총액", self.optpurse.deposit)  
+                        
+                #해당월 option을 모두 검색    
                             
               
             

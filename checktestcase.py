@@ -7,6 +7,7 @@ Created on Sat Dec 28 11:09:22 2019
 
 import unittest
 from kospi_history import *
+from optPurse import *
 
 class TestKospiHistoryInfo(unittest.TestCase):
      
@@ -26,14 +27,83 @@ class TestKospiHistoryInfo(unittest.TestCase):
         
     def test_get90dayHistorcalVol(self):
         kospi_info = KOSPIHISTORYINFO()
-        print(kospi_info.get90dayHistorcalVol("2016/02/23"))
+        #print(kospi_info.get90dayHistorcalVol("2016/02/23"))
         self.assertEqual(int(kospi_info.get90dayHistorcalVol("2016/02/23")),15)
         
     
-      
-
-
-
+class TestoptPurse(unittest.TestCase):
+    
+    def test_purse(self):
+        optpurse = optPurse()
+        
+        # 2월 220 call option 매도  5000000 총액 35000000
+        optpurse.SellOption("201P2220",20.0,1)
+        self.assertEqual(optpurse.deposit,35000000)  
+       
+        #2월 220 call option 매도 2500000 추가   총액 37500000
+        optpurse.SellOption("201P2220",10.0,1)
+        self.assertEqual(optpurse.deposit,37500000)  
+        print(optpurse.soldopt)
+        print("deposit",optpurse.deposit)
+    
+         #2월 220 call option 매도 15000000 추가 총액 52500000
+        optpurse.SellOption("201P2220",20.0,3)
+        self.assertEqual(optpurse.deposit,52500000)  
+        print(optpurse.soldopt)
+        print("deposit",optpurse.deposit)
+        
+        #2월 230 call option 매도 15000000  감소 총액 67500000
+        optpurse.SellOption("201P2230",20.0,3)
+        self.assertEqual(optpurse.deposit,67500000)  
+        print(optpurse.soldopt)
+        print("deposit",optpurse.deposit)
+        
+        #2월 220 call option 매수 15000000 감소 총액 52500000
+        optpurse.BuyOption("201P2220",20.0,3)
+        self.assertEqual(optpurse.deposit,52500000)  
+        print(optpurse.boughtopt)
+        print("deposit",optpurse.deposit)
+        
+        #2월 230 call option 매수 15000000 감소 총액 37500000 
+        optpurse.BuyOption("201P2230",20.0,3)
+        self.assertEqual(optpurse.deposit,37500000)  
+        print(optpurse.boughtopt)
+        print("deposit",optpurse.deposit)
+        
+        print(" ")
+        print("매도",optpurse.soldopt)
+        print("매수",optpurse.boughtopt)
+        print("deposit",optpurse.deposit)
+        
+        #2월 220 모두 청산 240-220 손해 20*250000*5 25000000 감소 총액  12500000
+        #2월 사놓았던              이익 20*250000*3 15000000 증가 총액  27500000
+        
+        
+        
+        
+        code = optpurse.ExpirationOptionScan("201902")
+        self.assertEqual(code[0],'201P2220')
+        self.assertEqual(code[1],'201P2230')
+        self.assertEqual(code[2],'201P2220')
+        self.assertEqual(code[3],'201P2230')
+        print("코드:",code)
+    
+        
+    
+        code = optpurse.ExpirationOptionScan("201902")
+        print("코드:",code)
+        
+        #2월 220 모두 청산 240-220 손해 20*250000*5 25000000 감소 총액  12500000
+        #2월 230 모두 청산 230-220 손해 10*250000*3 7500000  감소 총액   5000000
+        #2월 사놓았던      240-220 이익 20*250000*3 15000000 증가 총액  20000000  
+        #2월 사놓았던      230-220 이익 10*250000*3 7500000  증가 총액  27500000  
+        for i in code:
+            optpurse.ClearingOption(240.0,i)
+            
+        self.assertEqual(optpurse.deposit,27500000)
+        print("매도",optpurse.soldopt)
+        print("매수",optpurse.boughtopt)
+        print("deposit",optpurse.deposit)
 
 
 
