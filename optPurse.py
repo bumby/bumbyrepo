@@ -7,11 +7,12 @@ Created on Sat Dec 28 16:49:58 2019
 
 import pandas as pd
 import numpy as np
-from DBanal import *
+from OptCodeTool import *
 
 class optPurse:
     def __init__(self):
-        self.analtool =  DBalalysis("2");         
+#        self.analtool =  DBalalysis("2");
+        self.analtool = OptCodeTool()                 
         
         self.deposit = 30000000
         self.unitprice = 250000

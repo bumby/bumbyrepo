@@ -7,7 +7,8 @@ Created on Sat Sep  7 21:57:09 2019
 #from pandas import DataFrame
 import pandas as pd
 import sqlite3
-from DBanal import *
+#from DBanal import *
+from OptCodeTool import *
 from subject import *
 from observer import *
 import time
@@ -32,7 +33,9 @@ class PyOptHogaMonSimul(Observer):
         self.con = sqlite3.connect("kospisample.db")
         self.sample = {}
         self.dataload()
-        self.dbanal = DBalalysis('2')
+        #self.dbanal = DBalalysis('2')
+        
+        self.optcodetool = OptCodeTool()
         self.tmanager = timeManager()
         self.kospi_info = KOSPIHISTORYINFO()
         
@@ -85,10 +88,10 @@ class PyOptHogaMonSimul(Observer):
                 upperTarget, lowerTarget = self.kospi_info.currentTargetOptBand(cur_kospi_price,HV,remaining_days)
     
                    
-                #target_call_opt_code = self.dbanal.optcode_gen(cur_kospi_price+10.0,expire_month,'call')
-                #target_put_opt_code = self.dbanal.optcode_gen(cur_kospi_price-10.0,expire_month,'put')
-                target_call_opt_code = self.dbanal.optcode_gen(upperTarget,expire_month,'call')
-                target_put_opt_code = self.dbanal.optcode_gen(lowerTarget,expire_month,'put')
+                #target_call_opt_code = self.optcodetool.optcode_gen(cur_kospi_price+10.0,expire_month,'call')
+                #target_put_opt_code = self.optcodetool.optcode_gen(cur_kospi_price-10.0,expire_month,'put')
+                target_call_opt_code = self.optcodetool.optcode_gen(upperTarget,expire_month,'call')
+                target_put_opt_code = self.optcodetool.optcode_gen(lowerTarget,expire_month,'put')
                 print(k, self.df["현재지수"][index],curr_year+curr_month, cur_kospi_price,expire_month,target_call_opt_code, target_put_opt_code )#,k[0:4])
                
                               
@@ -162,7 +165,7 @@ class PyOptHogaMonSimul(Observer):
 #            self.sample[store]={}
 #            try:
 #                df = pd.read_sql("SELECT * from "+store, self.con, index_col = "index")
-#                #ATMS, deal_signal, sell_code, sell_price, buy_code, buy_price = dbanal.extract_call_gap(df1, 12.8, ATMS) 
+#                #ATMS, deal_signal, sell_code, sell_price, buy_code, buy_price = optcodetool.extract_call_gap(df1, 12.8, ATMS) 
 #                self.sample[store]["time"]     = store
 #                self.sample[store]["offerho1"] = df['offerho1']
 #                self.sample[store]["bidho1"]   = df['bidho1']

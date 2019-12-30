@@ -18,6 +18,8 @@ from opt_order_tr import *
 from targetOptHistory import *
 from datetime import datetime
 
+
+
 class DBalalysis(Observer):
     def __init__(self, expireMonth_):
         print("Option Analysis has been started")
