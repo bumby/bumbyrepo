@@ -136,6 +136,10 @@ class DBalalysis(Observer):
             print("no such code")
             raise Exception('no such code')  
 
+        # 두자리 수자에는 앞에 0을 추가 
+        if opt_index < 100:
+            opt_index_str = "0"+opt_index_str
+        
 
         #target expiration year
         expiration_year = expirationdate[0:4]

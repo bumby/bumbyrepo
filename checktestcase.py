@@ -93,6 +93,16 @@ class TestoptPurse(unittest.TestCase):
         code = optpurse.ExpirationOptionScan("201902")
         print("코드:",code)
         
+        
+        print(optpurse.soldopt) 
+        print(optpurse.boughtopt)
+        est = optpurse.expireEstForCurrentPortfolio(230.0,"201902")
+        print("만기추정", est)
+        self.assertEqual(est,-5000000)
+        #230 모두 청산 230-220 손해 10*250000*5 12500000  감소 총액   -12500000
+                         #  이익 10*250000*3 75000000 증가 총액   +75000000         
+    
+        
         #2월 220 모두 청산 240-220 손해 20*250000*5 25000000 감소 총액  12500000
         #2월 230 모두 청산 230-220 손해 10*250000*3 7500000  감소 총액   5000000
         #2월 사놓았던      240-220 이익 20*250000*3 15000000 증가 총액  20000000  
@@ -104,6 +114,9 @@ class TestoptPurse(unittest.TestCase):
         print("매도",optpurse.soldopt)
         print("매수",optpurse.boughtopt)
         print("deposit",optpurse.deposit)
+        
+        
+        
 
 
 
