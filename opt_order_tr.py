@@ -49,9 +49,9 @@ class OptOrder:
 #    def comm_connect(self):
 #        instXASession = win32com.client.DispatchWithEvents("XA_Session.XASession" , XASessionEventHandler)
 #
-#        id = "wangsisi"
-#        passwd = "siyoon77"
-#        cert_passwd = "siyoon77!!"
+#        id =
+#        passwd = 
+#        cert_passwd = 
 #        
 ##실투자
 #        #instXASession.ConnectServer("hts.ebestsec.co.kr",20001)
