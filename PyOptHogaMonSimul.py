@@ -270,8 +270,10 @@ if __name__ == "__main__":
    # app = QApplication(sys.argv)
    
     optdata =  OptData() 
-    for i in [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0]:
-        for j in [5, 10, 15 ,20]:
+#    for i in [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0]:
+    for i in [2.6]:        
+ #       for j in [5, 10, 15 ,20]:
+        for j in [10]:
             optmon = PyOptHogaMonSimul(i,j)
             print(optmon.getSampleSize())
                 #opthogamon observer 등록
