@@ -153,7 +153,8 @@ class MyWindow(QMainWindow, form_class, Observer):
         else:
             event.ignore()
             
-            
+        
+        
 if __name__=="__main__":
     app = QApplication(sys.argv)
     optdata =  OptData() #ㅐ
