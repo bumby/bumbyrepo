@@ -73,10 +73,15 @@ class DBalalysis(Observer):
             
             #print("kospi", kospi200price, " jandatecnt", jandatecnt, " HV ", HV)
             sigma = self.HV/100.0*math.sqrt(jandatecnt/365.0)
-            self.upperTarget = math.exp(math.log(kospi200price)+sigma*1.3) #1.3은 normal distribution 90% 범위
-            self.lowerTarget = math.exp(math.log(kospi200price)-sigma*1.3) #1.3은 normal distribution 90% 범위
+            self.upperTarget = math.exp(math.log(kospi200price)+sigma*0.8) #1.3은 normal distribution 90% 범위 #0.8은 78% 범위
+            self.lowerTarget = math.exp(math.log(kospi200price)-sigma*0.8) #1.3은 normal distribution 90% 범위
             self.upperTargetOpt = self.optcode_gen(self.upperTarget, self.expiremonth , "call")
             self.lowerTargetOpt = self.optcode_gen(self.lowerTarget, self.expiremonth , "put")
+            
+            #new safe target
+            self.safeupperTargetOpt = self.optcode_gen(self.upperTarget+10.0, self.expiremonth , "call")
+            self.safelowerTargetOpt = self.optcode_gen(self.lowerTarget-10.0, self.expiremonth , "put")
+             
         
             if self.단축코드 == self.upperTargetOpt:
                 #print("correct target upper", self.upperTargetOpt, "lower ", self.lowerTargetOpt )
@@ -92,6 +97,9 @@ class DBalalysis(Observer):
                     print("!!!! sell sell sell !!!")
                     if self.optorder.remained_TO == 1:
                         self.optorder.order_option("55551026999","0000",self.단축코드, "1", "00", pd.to_numeric(self.매수호가1), 1)
+                        
+                        #safe option 도 현재 매도 가격                         
+                        self.optorder.order_option("55551026999","0000",self.safeupperTargetOpt, "2", "03", 0.00, 1)
                     
             if self.단축코드 == self.lowerTargetOpt:
                 #print("correct target upper", self.upperTargetOpt, "lower ", self.lowerTargetOpt )
@@ -109,7 +117,8 @@ class DBalalysis(Observer):
                     if self.optorder.remained_TO == 1:
                         self.optorder.order_option("55551026999","0000",self.단축코드 , "1", "00",  pd.to_numeric(self.매수호가1), 1)
                     
-                    
+                        #safe option 도 현재 매도 가격                         
+                        self.optorder.order_option("55551026999","0000",self.safelowerTargetOpt, "2", "03", 0.00, 1)
                     
                   
             
