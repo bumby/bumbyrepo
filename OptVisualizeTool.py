@@ -182,7 +182,7 @@ if __name__ == "__main__":
     optpurse.getOptInfoFromDeposit()
     print(optpurse.soldopt)
     print(optpurse.boughtopt)
-    optvis.showProfitDistribution(optpurse, 270.0,"202002")
+    optvis.showProfitDistribution(optpurse,300.0,"202002")
     
     
    
