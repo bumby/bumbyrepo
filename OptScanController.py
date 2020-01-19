@@ -41,34 +41,38 @@ class OptScanContoller(ControllerInterface):
         self.monitor_mode = _monitor_mode
         if self.monitor_mode == "XingAPI":
             print("monitor source comes from XingAPI")
+            
             self.optmon = PyOptHogaMon.get_instance()
-            #opthogamon observer 등록
-            self.optmon.register_subject(optdata)
+      
+            self.chekyolmon  = PyOptChegyolMon.get_instance()
+            #체결 생성 등록
+            #순서 중요(체결정보를 통해서 kospi 지수가 업데이트 된 이후에  진행되어야 함)
+            self.HVmon = PyOptCurrentPriceMon() # 역사적 변동성 
+     
+            
+        
         elif self.monitor_mode == "simulation":
             print("monitor source comes from simulation")
+            
             self.optmon = PyOptHogaMonSimul.get_instance()
-            self.optmon.register_subject(optdata)
+            self.chekyolmon  = PyOptChegyolMonSimul.get_instance()
+            self.HVmon = PyOptCurrentPriceMonSimul() # 역사적 변동성 
+            
+        
         else:
             print("monitor mode is not determined")
             exit()
             
+        self.optmon.register_subject(optdata)    
+        self.chekyolmon.register_subject(optdata)  
+        self.HVmon.register_subject(optdata)
         
         # db 생성 및 observer 등록
         self.access_db = accessDB()
         self.access_db.register_subject(optdata)     
-     
-        
-                     
-        #체결 생성 등록
-        self.chekyolmon  = PyOptChegyolMon.get_instance()
-        self.chekyolmon.register_subject(optdata)
- 
-
-         #순서 중요(체결정보를 통해서 kospi 지수가 업데이트 된 이후에  진행되어야 함)
-        self.HVmon = PyOptCurrentPriceMon() # 역사적 변동성 
-        self.HVmon.register_subject(optdata)
- 
              
+                     
+
        
         
         #db analysis 생성 및 observer 등록
@@ -90,16 +94,12 @@ class OptScanContoller(ControllerInterface):
         print("종료")
         self.dbanal.closeDBanal()
     
-    
-    
-    
         
     def AutoTradeOn(self):
         
         pass
     
-    
-    
+      
     
     def AutoTradeOff(self):
     
@@ -112,6 +112,6 @@ class OptScanContoller(ControllerInterface):
 if __name__ == "__main__":
    # app = QApplication(sys.argv)
     optdata = OptData()
-    optmon  = OptScanContoller(optdata,"XingAPI")
+    optmon  = OptScanContoller(optdata,"simulation")
     optmon.Start()
         

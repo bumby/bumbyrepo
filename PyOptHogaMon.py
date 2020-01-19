@@ -279,8 +279,8 @@ class PyOptHogaMonSimul(PyOptHogaMon):
     
     def __init__(self):
         if self._instance is not None:
-            raise ValueError("An instantiatino already exist")
-        print("optmon Hoga Simulation o has created")
+            raise ValueError("An instantiation already exist")
+        print("optmon Hoga Simulation has created")
         self.count = 0
         
     
@@ -334,7 +334,7 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         이론가 = "11.0"
         # 변경 
         self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
-        #print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2)
+        print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1,이론가)
       
 
 
@@ -345,8 +345,9 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         """
         이베스트 서버에 실시간 data 요청함.
         """
+        
         while(1):
-            print("now construction")
+            self.OnReceiveRealData("DD")
         
             
         

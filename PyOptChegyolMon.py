@@ -275,7 +275,82 @@ class PyOptChegyolMon:
         xreal = win32com.client.DispatchWithEvents("XA_DataSet.XAReal", cls)
         return xreal
  
+
+class PyOptChegyolMonSimul:
+    _instance = None
+        
+    def __init__(self):
+        if self._instance is not None:
+            raise ValueError("An instantiation already exist")
+        print("optmon has created")
+        self.count = 0
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = PyOptChegyolMonSimul()
+        return cls._instance
     
+
+#temporary
+    def register_subject(self, subject):
+        self.subject = subject
+        #self.subject.register_observer(self)
+
+    
+        
+#--------------------------
+# t2301  차트
+#--------------------------  
+    def get_opt_chart(self, Option_expiration_mon):
+    
+        pass   
+    
+#--------------------------
+# XReal_OC0_  Real data Acquisition
+#--------------------------  
+
+    def OnReceiveRealData(self, tr_code): # event handler
+        """
+        이베스트 서버에서 ReceiveRealData 이벤트 받으면 실행되는 event handler
+        """
+        self.count += 1
+        KOSPI200지수 = "234"
+        체결시간 =  "123"
+        매도호가1 = "11.0" 
+        매수호가1 = "10.0"
+        단축코드 = "201CA230"
+        이론가 = "11.0"
+        
+        self.subject.change_envStatus("kospi200Index",KOSPI200지수)
+        self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1, 이론가)
+        print("체결발생", self.count, tr_code, 체결시간, KOSPI200지수, 매도호가1, 매수호가1, 단축코드)
+        
+
+    def start(self,  Option_expiration_mon):
+        """
+        이베스트 서버에 실시간 data 요청함.
+        """
+        while(1):
+            self.OnReceiveRealData("")
+            
+       
+
+    def add_item(self, optcode):
+        # 실시간데이터 요청 종목 추가
+        #self.SetFieldData("InBlock", "shcode", stockcode)
+        print("flag",optcode)
+        self.SetFieldData("InBlock", "optcode", optcode)
+        self.AdviseRealData()
+
+    def remove_item(self, optcode):
+        # stockcode 종목만 실시간데이터 요청 취소
+        self.UnadviseRealDataWithKey(optcode)
+
+    def end(self):
+        self.UnadviseRealData() # 실시간데이터 요청 모두 취소
+
+
 #unit test code    
 if __name__ == "__main__":
    # app = QApplication(sys.argv)
@@ -284,7 +359,9 @@ if __name__ == "__main__":
     best = BestAccess()                        #Login class 생성
     accounts_list = best.comm_connect(secinfo) #Login 
 
-    pyoptchegyolmon = PyOptChegyolMon.get_instance()
+    optdata =  OptData() #ㅐ
+    pyoptchegyolmon = PyOptChegyolMonSimul.get_instance()
+    pyoptchegyolmon.register_subject(optdata)
     pyoptchegyolmon.start("201912")
     #pyoptmon.get_list_code()
     #pyoptmon.get_opt_chart()
