@@ -59,6 +59,7 @@ class PyOptHogaMon(Observer):
 #       self.comm_connect()
 #   self.get_code_list()
 
+
 #--------------------------
 # t2301  차트
 #--------------------------  
