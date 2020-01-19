@@ -79,7 +79,6 @@ class OptData(Subject):
         """
         
         #호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가
-        
         for observer in self._observer_list:
             observer.update(self.optChart[self.currentCode]["hogaTime"], self.currentCode, self.optChart[self.currentCode]["offerho1"], self.optChart[self.currentCode]["bidho1"], self.optChart[self.currentCode]["theoryPrice"]) 
              

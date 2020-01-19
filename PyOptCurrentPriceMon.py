@@ -169,7 +169,7 @@ if __name__ == "__main__":
     accounts_list = best.comm_connect(secinfo) #Login 
 
     pyoptcurrentpricemon = PyOptCurrentPriceMon()
-    pyoptcurrentpricemon.getHistImpv(pd.to_numeric(280), "201912")
+    pyoptcurrentpricemon.getHistImpv(pd.to_numeric(280), "202002")
     
    # while pyoptcurrentpricemon.count < 500:
    #     pythoncom.PumpWaitingMessages()

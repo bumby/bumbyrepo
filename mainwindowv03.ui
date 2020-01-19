@@ -282,32 +282,32 @@
      </property>
      <column>
       <property name="text">
-       <string>종목명</string>
+       <string>옵션코드</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>보유량</string>
+       <string>매도호가</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>매입가</string>
+       <string>매수호가</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>현재가</string>
+       <string>현재 kospi200</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>평가손익</string>
+       <string>만기잔여일</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>수익률(%)</string>
+       <string>HV</string>
       </property>
      </column>
     </widget>

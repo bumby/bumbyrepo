@@ -23,15 +23,15 @@ from bestConnect import *
 from subject import *
 from observer import *
 
-
+        
+      
 class XAQueryEventHandlerT2301:
     query_state = 0
 
     def OnReceiveData(self, code):
         XAQueryEventHandlerT2301.query_state = 1           
               
-
-       
+      
             
 #class PyOptHogaMon:
 class PyOptHogaMon(Observer):
@@ -40,8 +40,6 @@ class PyOptHogaMon(Observer):
         self.count = 0
         
       
-        
-#------------------------------observer implementaion ---------------        
     def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
         self.호가시간=호가시간_
         self.단축코드=단축코드_
@@ -57,9 +55,7 @@ class PyOptHogaMon(Observer):
 
     def display(self):
         #print ('호가시간:', self.호가시간, '단축코드:', self.단축코드 , '매도호가1:', self.매도호가1,'매수호가1:', self.매수호가1, '이론가:', self.이론가)
-        pass
-#----------------------------------------------------------     
-        
+        pass     
 #       self.comm_connect()
 #   self.get_code_list()
 
@@ -149,7 +145,7 @@ class PyOptHogaMon(Observer):
             ohlcv['gmprice'].append(gmprice)
             
             #print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
-            self.subject.change_optprice(timevl,optcode,offerho1,bidho1,"")
+            self.subject.change_optprice(timevl,optcode,offerho1,bidho1,theoryprice)
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock2")
         
@@ -209,7 +205,7 @@ class PyOptHogaMon(Observer):
             ohlcv2['gmprice'].append(gmprice)
                  
             #print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
-            self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12,"")
+            self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12,theoryprice2)
         
 #        self.subject.print_opt()
         return ohlcv, ohlcv2    
@@ -275,6 +271,99 @@ class PyOptHogaMon(Observer):
         return xreal
  
     
+     
+#class PyOptHogaMon:
+class PyOptHogaMonSimul(PyOptHogaMon):
+    _instance = None
+    
+    
+    def __init__(self):
+        if self._instance is not None:
+            raise ValueError("An instantiatino already exist")
+        print("optmon Hoga Simulation o has created")
+        self.count = 0
+        
+    
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = PyOptHogaMonSimul()
+        return cls._instance
+        
+      
+    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
+        self.호가시간=호가시간_
+        self.단축코드=단축코드_
+        self.매도호가1=매도호가1_
+        self.매수호가1=매수호가1_
+        self.이론가 = 이론가_
+         
+        self.display()
+
+    def register_subject(self, subject):
+        self.subject = subject
+        self.subject.register_observer(self)
+
+    def display(self):
+        #print ('호가시간:', self.호가시간, '단축코드:', self.단축코드 , '매도호가1:', self.매도호가1,'매수호가1:', self.매수호가1, '이론가:', self.이론가)
+        pass     
+#       self.comm_connect()
+#   self.get_code_list()
+
+#--------------------------
+# t2301  차트
+#--------------------------  
+    def get_opt_chart(self, Option_expiration_mon):
+    
+        #가상 호가 시뮬레이션 
+        pass
+    
+#--------------------------
+# XReal_OC0_  Real data Acquisition
+#--------------------------  
+
+    def OnReceiveRealData(self, tr_code): # event handler
+        """
+        이베스트 서버에서 ReceiveRealData 이벤트 받으면 실행되는 event handler
+        """
+        self.count += 1
+        호가시간 =  "123"
+        매도호가1 = "11.0" 
+        매수호가1 = "10.0"
+        단축코드 = "201CA230"
+        이론가 = "11.0"
+        # 변경 
+        self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
+        #print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2)
+      
+
+
+
+
+
+    def start(self,  Option_expiration_mon):
+        """
+        이베스트 서버에 실시간 data 요청함.
+        """
+        while(1):
+            print("now construction")
+        
+            
+        
+
+    def add_item(self, optcode):
+        # 실시간데이터 요청 종목 추가
+        pass
+
+    def remove_item(self, optcode):
+        # stockcode 종목만 실시간데이터 요청 취소
+        pass
+
+    def end(self):
+        pass
+
+    
+    
 #unit test code    
 if __name__ == "__main__":
    # app = QApplication(sys.argv)
@@ -287,9 +376,7 @@ if __name__ == "__main__":
     optmon  = PyOptHogaMon.get_instance()
         #opthogamon observer 등록
     optmon.register_subject(optdata)
-    optmon.start("201912")
+    optmon.start("202002")
     
-
-   
     while 1:
         pythoncom.PumpWaitingMessages()

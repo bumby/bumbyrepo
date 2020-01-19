@@ -22,7 +22,7 @@ import time
 class OptScanContoller(ControllerInterface):
     
     
-    def __init__(self, optdata):
+    def __init__(self, optdata,_monitor_mode):
         super(OptScanContoller,self).__init__()
                 #subject 생성
      
@@ -35,10 +35,23 @@ class OptScanContoller(ControllerInterface):
         #simulation
         #self.optmon = PyOptHogaMonSimul.get_instance()
         #real data
-        self.optmon = PyOptHogaMon.get_instance()
-        #opthogamon observer 등록
-        self.optmon.register_subject(optdata)
-              
+        
+        
+        
+        self.monitor_mode = _monitor_mode
+        if self.monitor_mode == "XingAPI":
+            print("monitor source comes from XingAPI")
+            self.optmon = PyOptHogaMon.get_instance()
+            #opthogamon observer 등록
+            self.optmon.register_subject(optdata)
+        elif self.monitor_mode == "simulation":
+            print("monitor source comes from simulation")
+            self.optmon = PyOptHogaMonSimul.get_instance()
+            self.optmon.register_subject(optdata)
+        else:
+            print("monitor mode is not determined")
+            exit()
+            
         
         # db 생성 및 observer 등록
         self.access_db = accessDB()
@@ -91,3 +104,14 @@ class OptScanContoller(ControllerInterface):
     def AutoTradeOff(self):
     
         pass
+    
+    
+
+
+#unit test code    
+if __name__ == "__main__":
+   # app = QApplication(sys.argv)
+    optdata = OptData()
+    optmon  = OptScanContoller(optdata,"XingAPI")
+    optmon.Start()
+        
