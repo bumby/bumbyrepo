@@ -32,7 +32,7 @@ from OptScanController import *
 form_class = uic.loadUiType("mainwindowv03.ui")[0]
 
 class MyWindow(QMainWindow, form_class, Observer):
-    def __init__(self, ControllerInterface, optdata):
+    def __init__(self, ControllerInterface, optdata, mode):
         super().__init__()
 
       
@@ -41,12 +41,16 @@ class MyWindow(QMainWindow, form_class, Observer):
         
         
         #로그인 프로세스
-        self.secinfo = secInfo()
-        self.best = BestAccess()
-        self.accounts_list = self.best.comm_connect(self.secinfo)
-        self.passwd =  self.secinfo.getOrderPasswd()  
+        if mode == "XingAPI":
+            self.secinfo = secInfo()
+            self.best = BestAccess()
+            self.accounts_list = self.best.comm_connect(self.secinfo)
+            self.passwd =  self.secinfo.getOrderPasswd()  
+        elif mode == "simulation":
+            self.passwd = "1234"
+        else:
+            print("not adequate mode has been selected")
 
-        
         self.setupUi(self)
 #        #자신을 observer로 등록
         self.register_subject(optdata)  
@@ -56,18 +60,7 @@ class MyWindow(QMainWindow, form_class, Observer):
         self.lineEdit.textChanged.connect(self.code_changed)
         self.pushButton.clicked.connect(self.StartButton)
         
-#        self..pushButton.clicked.
-#        self.remained_burget = 1
-     
-        
-        
-#        ####################test code####################
-#        #timer2
-#        self.timer2 = QTimer(self)
-#        self.timer2.start(1000*4)
-#        self.timer2.timeout.connect(self.timeout2)
-#        self.test_counter = 0
-#        
+       
         self.controller.Start()  
         
         
@@ -152,14 +145,13 @@ class MyWindow(QMainWindow, form_class, Observer):
             event.accept()
         else:
             event.ignore()
-            
-        
+
+       
         
 if __name__=="__main__":
     app = QApplication(sys.argv)
-    optdata =  OptData() #ㅐ
-    optscancon = OptScanContoller(optdata)
-    myWindow = MyWindow(optscancon, optdata)
+    optdata =  OptData() 
+    optscancon = OptScanContoller(optdata,"simulation")
+    myWindow = MyWindow(optscancon, optdata,"simulation")
     myWindow.show()
     app.exec_()
-    
