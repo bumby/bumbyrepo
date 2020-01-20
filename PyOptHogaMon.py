@@ -13,12 +13,17 @@ Created on Mon Oct  8 21:07:41 2018
 """
 import sys
 from PyQt5.QtWidgets import *
-import win32com.client
-import pythoncom
+
+try:
+    import win32com.client
+    import pythoncom
+except:
+    print("no window conmunication")
+
 from pandas import DataFrame
 #from threading import Timer,Thread,Event
 import time
-from bestConnect import *
+
 
 from subject import *
 from observer import *
@@ -271,8 +276,14 @@ class PyOptHogaMon(Observer):
         xreal = win32com.client.DispatchWithEvents("XA_DataSet.XAReal", cls)
         return xreal
  
-    
-     
+
+
+#from thread import Thread
+import threading
+import time
+from kospi200Simulation import * 
+
+
 #class PyOptHogaMon:
 class PyOptHogaMonSimul(PyOptHogaMon):
     _instance = None
@@ -283,7 +294,8 @@ class PyOptHogaMonSimul(PyOptHogaMon):
             raise ValueError("An instantiation already exist")
         print("optmon Hoga Simulation has created")
         self.count = 0
-        
+         
+        self.simulmonitor = Kospi200Simul(2.6,10)
     
     @classmethod
     def get_instance(cls):
@@ -327,16 +339,50 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         """
         이베스트 서버에서 ReceiveRealData 이벤트 받으면 실행되는 event handler
         """
+
         self.count += 1
-        호가시간 =  "123"
-        매도호가1 = "11.0" 
-        매수호가1 = "10.0"
-        단축코드 = "201CA230"
-        이론가 = "11.0"
+       
+        
+        cur_kospi_price = pd.to_numeric(self.simulmonitor.df["현재지수"][self.count])
+        k = self.simulmonitor.df["일자"][self.count]
+        curr_year = k[0:4]
+        curr_month = k[5:7]
+        curr_day = k[8:10]
+        currday_dash = curr_year+'/'+curr_month+'/'+curr_day
+        expire_month = self.simulmonitor.tmanager.getNextYearMonth(pd.to_numeric(curr_year),pd.to_numeric(curr_month))
+
+        print(self.simulmonitor.df["일자"][self.count], "cur_kospi_price",pd.to_numeric(self.simulmonitor.df["현재지수"][self.count]),"expire month",expire_month)
+
+        mintick = int(cur_kospi_price-50.0)
+        maxtick = int(cur_kospi_price+50.0)
+        
+        if curr_year in ["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018"]  :
+            for i in np.arange(mintick, maxtick, 2.5):
+                opt_code = self.simulmonitor.optcodetool.optcode_gen(i,expire_month,'call')
+                print(opt_code)
+                try:
+                    calloptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",")
+                    matchingdayindex = (calloptdata[calloptdata['일자'] == currday_dash])
+                    print("시가",matchingdayindex.iloc[0]['시가'])
+
+                    호가시간 = k
+                    매도호가1 = matchingdayindex.iloc[0]['시가']
+                    매수호가1 = matchingdayindex.iloc[0]['시가']
+                    단축코드 = opt_code
+                    이론가 = "11"   
+
+                    self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
+                    print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1,이론가)
+
+                except:
+                    print("safe call option has not been solved" )
+
         # 변경 
-        self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
-        print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1,이론가)
-      
+
+
+        threading.Timer(0.01,self.OnReceiveRealData, args = ("dd",)).start()
+        return True
+  
 
 
 
@@ -347,10 +393,15 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         이베스트 서버에 실시간 data 요청함.
         """
         
-        while(1):
-            self.OnReceiveRealData("DD")
+        #while(1):
+        self.OnReceiveRealData("DD")
+        #t1 = Thread(target = self.OnReceiveRealData, args = ("dd",))
         
-            
+        #t1.start()
+
+
+       
+    
         
 
     def add_item(self, optcode):
@@ -364,21 +415,24 @@ class PyOptHogaMonSimul(PyOptHogaMon):
     def end(self):
         pass
 
-    
-    
+
+try:
+    from bestConnect import *
+except:
+    print("no window communication")    
 #unit test code    
 if __name__ == "__main__":
-   # app = QApplication(sys.argv)
+   
     
-    secinfo = secInfo()                        #계좌 정보 holder
-    best = BestAccess()                        #Login class 생성
-    accounts_list = best.comm_connect(secinfo) #Login 
+ #   secinfo = secInfo()                        #계좌 정보 holder
+ #   best = BestAccess()                        #Login class 생성
+ #   accounts_list = best.comm_connect(secinfo) #Login 
 
     optdata =  OptData() #ㅐ
-    optmon  = PyOptHogaMon.get_instance()
+    optmon  = PyOptHogaMonSimul.get_instance()
         #opthogamon observer 등록
     optmon.register_subject(optdata)
     optmon.start("202002")
     
-    while 1:
-        pythoncom.PumpWaitingMessages()
+   # while 1:
+   #     pythoncom.PumpWaitingMessages()

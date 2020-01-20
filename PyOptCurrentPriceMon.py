@@ -4,15 +4,18 @@ Created on Wed Nov 20 13:42:52 2019
 
 @author: USER
 """
-import win32com.client
-import pythoncom
+
+try:
+    import win32com.client
+    import pythoncom
+except:
+    print("no window communication")
+
 import math
 import pandas as pd
 
-
 from subject import *
 from observer import *
-
 
 
 class XAQueryEventHandlerT2101:
@@ -276,8 +279,12 @@ class PyOptCurrentPriceMonSimul(Observer):
         """
         self.updateHistImpv(Option_expiration_mon)
                     
-        
-from bestConnect import *
+
+try:
+    from bestConnect import *
+except:
+    print("no communication")
+
 import pandas as pd
 
 if __name__ == "__main__":

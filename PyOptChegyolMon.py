@@ -7,12 +7,16 @@ Created on Fri Aug 16 14:42:48 2019
 
 import sys
 from PyQt5.QtWidgets import *
-import win32com.client
-import pythoncom
+
+try:
+    import win32com.client
+    import pythoncom
+except:
+    print("no window communication")
+
 from pandas import DataFrame
 #from threading import Timer,Thread,Event
 import time
-from bestConnect import *
 
 from subject import *
 
@@ -276,6 +280,10 @@ class PyOptChegyolMon:
         return xreal
  
 
+
+import threading
+import time
+
 class PyOptChegyolMonSimul:
     _instance = None
         
@@ -325,15 +333,16 @@ class PyOptChegyolMonSimul:
         self.subject.change_envStatus("kospi200Index",KOSPI200지수)
         self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1, 이론가)
         print("체결발생", self.count, tr_code, 체결시간, KOSPI200지수, 매도호가1, 매수호가1, 단축코드)
+        threading.Timer(1.0,self.OnReceiveRealData, args = ("dd",)).start()
         
 
     def start(self,  Option_expiration_mon):
         """
         이베스트 서버에 실시간 data 요청함.
         """
-        while(1):
-            self.OnReceiveRealData("")
-            
+        #while(1):
+        self.OnReceiveRealData("")
+        
        
 
     def add_item(self, optcode):
@@ -350,6 +359,10 @@ class PyOptChegyolMonSimul:
     def end(self):
         self.UnadviseRealData() # 실시간데이터 요청 모두 취소
 
+try:
+    from bestConnect import *
+except:
+    print("no window communication")
 
 #unit test code    
 if __name__ == "__main__":

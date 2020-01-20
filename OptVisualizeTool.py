@@ -128,7 +128,7 @@ if __name__ == "__main__":
     optvis.stackDeposit("123",17)
    
     optvis.showDepositHistory()
-    optpurse = optPurse()
+    optpurse = optPurse("simulation")
     
     #2월 220 call option 매도  5000000 총액 35000000
     optpurse.SellOption("201P2220",20.0,1)
