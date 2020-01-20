@@ -34,7 +34,7 @@ class TestKospiHistoryInfo(unittest.TestCase):
 class TestoptPurse(unittest.TestCase):
     
     def test_purse(self):
-        optpurse = optPurse()
+        optpurse = optPurse("XingAPI")
         
         # 2월 220 call option 매도  5000000 총액 35000000
         optpurse.SellOption("201P2220",20.0,1)

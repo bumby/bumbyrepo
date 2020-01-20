@@ -4,10 +4,13 @@ Created on Sun Jun 30 00:01:47 2019
 
 @author: USER
 """
+try:
+    import win32com.client
+    import pythoncom
+except:
+    print("no window communication")
 
-import win32com.client
-import pythoncom
-from bestConnect import *
+    
 #
 #class XASessionEventHandler:
 #    login_state = 0
@@ -36,43 +39,7 @@ class OptOrder:
         super().__init__()
         self.count = 0
         self. remained_TO = 1
-        #self.comm_connect()
         
-#        self.secinfo = secInfo()
-#        self.optaccount = self.secinfo.getOptAccount()
-#        self.passwd =  self.secinfo.getOrderPasswd()       
-#            
-#        self.best = BestAccess()
-#        self.accounts_list = self.best.comm_connect(self.secinfo)
-#        self.comboBox.addItems(self.accounts_list)
-
-#    def comm_connect(self):
-#        instXASession = win32com.client.DispatchWithEvents("XA_Session.XASession" , XASessionEventHandler)
-#
-#        id =
-#        passwd = 
-#        cert_passwd = 
-#        
-##실투자
-#        #instXASession.ConnectServer("hts.ebestsec.co.kr",20001)
-##모의투자
-#        instXASession.ConnectServer("demo.ebestsec.co.kr",20001)
-#        instXASession.Login(id,passwd,cert_passwd,0,0)
-#
-#        while XASessionEventHandler.login_state == 0:
-#            pythoncom.PumpWaitingMessages()
-#            
-#        num_account = instXASession.GetAccountListCount()
-# 
-#        account = []
-#        for i in range(num_account):
-#        #    account = instXASession.GetAccountList(i)
-#             account.append(instXASession.GetAccountList(i))   
-#        
-#        print(account)
-#            
-#        return account
-         
     #--------------------------
 # CFOAT00100  주식 주문
 #--------------------------
@@ -102,7 +69,31 @@ class OptOrder:
    
         
 
-    
+class OptOrderSimul:
+    def __init__(self):
+        super().__init__()
+        self.count = 0
+        self. remained_TO = 1
+        #self.comm_connect()
+        
+         
+    #--------------------------
+# CFOAT00100  주식 주문
+#--------------------------
+    def order_option(self, 계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량):
+       
+        #계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량
+         
+        print("주문내용 ",계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량)
+        
+        self. remained_TO = 0
+
+
+try:
+    from bestConnect import *
+except:
+    print("no window communication")
+
 if __name__ == "__main__":
  #   app = QApplication(sys.argv)
     

@@ -11,9 +11,10 @@ from OptCodeTool import *
 from getMyDeposit import *
 
 class optPurse:
-    def __init__(self):
+    def __init__(self, datamode):
 #        self.analtool =  DBalalysis("2");
-        self.analtool = OptCodeTool()                 
+        self.analtool = OptCodeTool()      
+        self.datamode  = datamode          
         
 #        self.deposit = 30000000
 #        self.unitprice = 250000
@@ -262,7 +263,12 @@ class optPurse:
         
         
     def getOptInfoFromDeposit(self):
-        mydeposit = getMyDeposit()
+        if self.datamode == "XingAPI":
+            mydeposit = getMyDeposit()
+        elif self.datamode == "simulation":
+            mydeposit = getMyDepositSimul()
+        else:
+            print("no such data mode")
         deposit_stack = mydeposit.scanDeposit(100,"55551026999","0000" , "1", "1")         #input 레코드갯수, 계좌번호, 입력비밀번호, 잔고평가구분, 선물가격평가구분
                                                                               #output 종목번호, 종목명, 매매구분, 미결재수량, 평균가, 현재가, 평가금액
         print(deposit_stack)
@@ -278,13 +284,13 @@ class optPurse:
                 self.BuyOption(FnoIsuNo, FnoAvrPrc, UnsttQty)
             else:
                 self.SellOption(FnoIsuNo, FnoAvrPrc, UnsttQty)
-        
+       
         
             
         
 if __name__=="__main__":
     
-    optpurse = optPurse()
+    optpurse = optPurse("XingAPI")
     
     #2월 220 call option 매도  5000000 총액 35000000
     optpurse.SellOption("201P2220",20.0,1)

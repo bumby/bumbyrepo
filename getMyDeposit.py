@@ -5,9 +5,12 @@ Created on Wed Jan  8 21:36:07 2020
 @author: USER
 """
 
-import win32com.client
-import pythoncom
-from bestConnect import *
+try:
+    import win32com.client
+    import pythoncom
+except:
+    print("opt purse simulation mode")
+
 import numpy as np
 
 
@@ -80,7 +83,14 @@ class getMyDeposit:
             deposit_stack = np.vstack((deposit_stack,optinfo))
         deposit_stack = deposit_stack[1:count+1,:]
         return deposit_stack
-            
+        
+
+
+try:
+    from bestConnect import *
+except:
+    print("opt purse simulation mode")
+
 if __name__ == "__main__":
  #   app = QApplication(sys.argv)
     

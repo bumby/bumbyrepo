@@ -7,9 +7,12 @@ Created on Sun Sep 30 13:28:40 2018
 
 
 from sec_info import *
-import win32com.client
-import pythoncom
 
+try:
+    import win32com.client
+    import pythoncom
+except:
+    print("no window communication")
 
 class XASessionEventHandler:
     login_state=0
@@ -60,6 +63,17 @@ class BestAccess:
         return account
          
 
+
+class BestAccessSimul:
+    
+    #def __init__(self):
+     
+        
+        
+    def comm_connect(self, sec_info):
+        print("account has been opened")  
+        return True
+         
 
 if __name__== "__main__":
     secinfo = secInfo() #계좌 정보 holder
