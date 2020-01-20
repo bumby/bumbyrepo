@@ -4,7 +4,7 @@ Created on Mon Sep  2 20:56:43 2019
 
 @author: USER
 """
-from HTrader import *
+#from HTrader import *
 from ControllerInterface import *
 from subject import *
 
@@ -14,7 +14,6 @@ from PyOptHogaMon import *
 from PyOptChegyolMon import *
 from DBanal import *
 from timeManager import *
-#from PyOptHogaMonSimul import *
 from PyOptCurrentPriceMon import *
 
 import time
@@ -67,14 +66,12 @@ class OptScanContoller(ControllerInterface):
         self.chekyolmon.register_subject(optdata)  
         self.HVmon.register_subject(optdata)
         
+
         # db 생성 및 observer 등록
         self.access_db = accessDB()
         self.access_db.register_subject(optdata)     
              
-                     
 
-       
-        
         #db analysis 생성 및 observer 등록
         self.dbanal = DBalalysis(self.Option_expiration_mon)   
         self.dbanal.register_subject(optdata)
