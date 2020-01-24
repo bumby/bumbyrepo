@@ -356,15 +356,20 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         mintick = int(cur_kospi_price-50.0)
         maxtick = int(cur_kospi_price+50.0)
         
+        
+        
+        forprinting_code = []
+        forprinting_price = []
+        
+        
         if curr_year in ["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018"]  :
             for i in np.arange(mintick, maxtick, 2.5):
                 opt_code = self.simulmonitor.optcodetool.optcode_gen(i,expire_month,'call')
-                print(opt_code)
+                
                 try:
                     calloptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",")
                     matchingdayindex = (calloptdata[calloptdata['일자'] == currday_dash])
-                    print("시가",matchingdayindex.iloc[0]['시가'])
-
+                    
                     호가시간 = k
                     매도호가1 = matchingdayindex.iloc[0]['시가']
                     매수호가1 = matchingdayindex.iloc[0]['시가']
@@ -372,15 +377,23 @@ class PyOptHogaMonSimul(PyOptHogaMon):
                     이론가 = "11"   
 
                     self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
-                    print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1,이론가)
+                    
+                    forprinting_code.append(opt_code)
+                    forprinting_price.append(매도호가1)               
 
                 except:
-                    print("safe call option has not been solved" )
-
+                    #print("safe call option has not been solved" )
+                    pass
         # 변경 
 
+        print(forprinting_code)
+        print(forprinting_price)
+    
+        #만기에 지우기 장기 옵션 없음
 
-        threading.Timer(0.01,self.OnReceiveRealData, args = ("dd",)).start()
+                      
+
+        threading.Timer(0.5,self.OnReceiveRealData, args = ("dd",)).start()
         return True
   
 

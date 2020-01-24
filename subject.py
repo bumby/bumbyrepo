@@ -115,13 +115,14 @@ class OptData(Subject):
         if theoryprice_ != "":
             opt["theoryPrice"] = theoryprice_
 
-    
         self.optChart[m_optCode_] = opt
         self.optChanged()
         
         #print("optdata modified !!!")
 
-
+    def clear_optchart(self):
+        self.optChart = {}
+    
     def get_optChart(self):
         return self.optChart
 
