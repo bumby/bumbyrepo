@@ -37,8 +37,6 @@ class XAQueryEventHandlerCFOAT00100:
 class OptOrder:
     def __init__(self):
         super().__init__()
-        self.count = 0
-        self. remained_TO = 1
         
     #--------------------------
 # CFOAT00100  주식 주문
@@ -59,7 +57,6 @@ class OptOrder:
          
         print("주문내용 ",계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량)
         
-        self. remained_TO = 0
       #  while XAQueryEventHandlerCFOAT00100.query_state == 0:
       #      pythoncom.PumpWaitingMessages()
       #  XAQueryEventHandlerCFOAT00100.query_state = 0
@@ -69,15 +66,15 @@ class OptOrder:
    
         
 
+
 class OptOrderSimul:
     def __init__(self):
         super().__init__()
-        self.count = 0
-        self. remained_TO = 1
+        
         #self.comm_connect()
         
          
-    #--------------------------
+#--------------------------
 # CFOAT00100  주식 주문
 #--------------------------
     def order_option(self, 계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량):
@@ -85,8 +82,7 @@ class OptOrderSimul:
         #계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량
          
         print("주문내용 ",계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량)
-        
-        self. remained_TO = 0
+
 
 
 try:
@@ -104,6 +100,3 @@ if __name__ == "__main__":
 
     xreal = XReal_CFOAT00100_.get_instance()
     xreal.order_option("55551024561","0000","201P7270" , "1", "00", "0.37", "1")
-    #xreal.start("201P7270")
-    while xreal.count < 100:
-        pythoncom.PumpWaitingMessages()

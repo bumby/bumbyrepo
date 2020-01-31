@@ -373,9 +373,9 @@ if __name__ == "__main__":
     accounts_list = best.comm_connect(secinfo) #Login 
 
     optdata =  OptData() #ㅐ
-    pyoptchegyolmon = PyOptChegyolMonSimul.get_instance()
+    pyoptchegyolmon = PyOptChegyolMon.get_instance()
     pyoptchegyolmon.register_subject(optdata)
-    pyoptchegyolmon.start("201912")
+    pyoptchegyolmon.start("202002")
     #pyoptmon.get_list_code()
     #pyoptmon.get_opt_chart()
     #pyoptmon.run()

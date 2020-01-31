@@ -73,23 +73,26 @@ class OptData(Subject):
         return "observer does not exist."
 
 
+  
+
     def notify_observers(self): 
         """
         notyfy observer about the change event 
         """
         
-        #호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가
+        #호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가 
+              
         for observer in self._observer_list:
             observer.update(self.optChart[self.currentCode]["hogaTime"], self.currentCode, self.optChart[self.currentCode]["offerho1"], self.optChart[self.currentCode]["bidho1"], self.optChart[self.currentCode]["theoryPrice"]) 
              
-  
+
     def optChanged(self):
         self.notify_observers()
 
     
     def change_envStatus(self,key,value):
         self.envStatus[key] = value 
-        self.optChanged()
+        #self.optChanged()
         
     
     def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_, theoryprice_ ):
@@ -118,7 +121,7 @@ class OptData(Subject):
         self.optChart[m_optCode_] = opt
         self.optChanged()
         
-        #print("optdata modified !!!")
+  
 
     def clear_optchart(self):
         self.optChart = {}

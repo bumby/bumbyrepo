@@ -150,7 +150,7 @@ class PyOptHogaMon(Observer):
             ohlcv['impv'].append(impv)
             ohlcv['gmprice'].append(gmprice)
             
-            #print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
+            print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
             self.subject.change_optprice(timevl,optcode,offerho1,bidho1,theoryprice)
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock2")
@@ -210,7 +210,7 @@ class PyOptHogaMon(Observer):
             ohlcv2['impv'].append(impv2)
             ohlcv2['gmprice'].append(gmprice)
                  
-            #print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
+            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
             self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12,theoryprice2)
         
 #        self.subject.print_opt()
@@ -341,7 +341,7 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         """
 
         self.count += 1
-       
+        self.subject.clear_optchart()
         
         cur_kospi_price = pd.to_numeric(self.simulmonitor.df["현재지수"][self.count])
         k = self.simulmonitor.df["일자"][self.count]
@@ -357,13 +357,18 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         maxtick = int(cur_kospi_price+50.0)
         
         
+        forprinting_opt_call_index = []
+        forprinting_opt_call_code = []
+        forprinting_opt_call_price = []
         
-        forprinting_code = []
-        forprinting_price = []
+        forprinting_opt_put_index = []
+        forprinting_opt_put_code = []
+        forprinting_opt_put_price = []
         
+        index_range = np.arange(mintick, maxtick, 2.5)
         
         if curr_year in ["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018"]  :
-            for i in np.arange(mintick, maxtick, 2.5):
+            for i in index_range:
                 opt_code = self.simulmonitor.optcodetool.optcode_gen(i,expire_month,'call')
                 
                 try:
@@ -378,22 +383,50 @@ class PyOptHogaMonSimul(PyOptHogaMon):
 
                     self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
                     
-                    forprinting_code.append(opt_code)
-                    forprinting_price.append(매도호가1)               
+                    forprinting_opt_call_index.append(i)
+                    forprinting_opt_call_code.append(opt_code)
+                    forprinting_opt_call_price.append(매도호가1)               
 
                 except:
                     #print("safe call option has not been solved" )
                     pass
-        # 변경 
+                
+                opt_code = self.simulmonitor.optcodetool.optcode_gen(i,expire_month,'put')
+                try:
+                    putoptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",")
+                    matchingdayindex = (putoptdata[putoptdata['일자'] == currday_dash])
+                    
+                    호가시간 = k
+                    매도호가1 = matchingdayindex.iloc[0]['시가']
+                    매수호가1 = matchingdayindex.iloc[0]['시가']
+                    단축코드 = opt_code
+                    이론가 = "11"   
 
-        print(forprinting_code)
-        print(forprinting_price)
+                    self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
+                    
+                    forprinting_opt_put_index.append(i)
+                    forprinting_opt_put_code.append(opt_code)
+                    forprinting_opt_put_price.append(매도호가1)               
+
+                except:
+                    #print("safe call option has not been solved" )
+                    pass
+                
+        # 변경 
+   
+       #
+        
     
+        
+        print(forprinting_opt_call_price)
+        print(forprinting_opt_put_price)
+        #dd = self.subject.get_optChart()
+        #print(dd['bidho'])
         #만기에 지우기 장기 옵션 없음
 
                       
 
-        threading.Timer(0.5,self.OnReceiveRealData, args = ("dd",)).start()
+        threading.Timer(0.1,self.OnReceiveRealData, args = ("dd",)).start()
         return True
   
 
@@ -405,7 +438,7 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         """
         이베스트 서버에 실시간 data 요청함.
         """
-        
+
         #while(1):
         self.OnReceiveRealData("DD")
         #t1 = Thread(target = self.OnReceiveRealData, args = ("dd",))
@@ -437,15 +470,15 @@ except:
 if __name__ == "__main__":
    
     
- #   secinfo = secInfo()                        #계좌 정보 holder
- #   best = BestAccess()                        #Login class 생성
- #   accounts_list = best.comm_connect(secinfo) #Login 
+    secinfo = secInfo()                        #계좌 정보 holder
+    best = BestAccess()                        #Login class 생성
+    accounts_list = best.comm_connect(secinfo) #Login 
 
     optdata =  OptData() #ㅐ
-    optmon  = PyOptHogaMonSimul.get_instance()
+    optmon  = PyOptHogaMon.get_instance()
         #opthogamon observer 등록
     optmon.register_subject(optdata)
     optmon.start("202002")
     
-   # while 1:
-   #     pythoncom.PumpWaitingMessages()
+    while 1:
+        pythoncom.PumpWaitingMessages()

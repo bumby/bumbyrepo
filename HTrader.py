@@ -6,6 +6,9 @@ Created on Sun Sep 30 00:11:52 2018
 """
 
 import sys
+import threading
+import copy
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import uic
@@ -28,6 +31,7 @@ from ControllerInterface import *
 
 
 from OptScanController import *
+from OptStatusMonitor import *
 
 form_class = uic.loadUiType("mainwindowv03.ui")[0]
 
@@ -61,7 +65,8 @@ class MyWindow(QMainWindow, form_class, Observer):
         self.pushButton.clicked.connect(self.StartButton)
         
        
-        self.controller.Start()  
+        self.controller.Start(optdata) 
+        self.updateGuiOptHoga()
         
         
 #------------------------------observer implementaion -----------------------------------------------------------------------------       
@@ -73,25 +78,28 @@ class MyWindow(QMainWindow, form_class, Observer):
         self.이론가 = 이론가_
        
         self.display()
-        self.updateGuiOptHoga()
+        #self.updateGuiOptHoga()
 
     def register_subject(self, subject):
         self.subject = subject
         self.subject.register_observer(self)
 
     def display(self):
-        #print ("Gui updated")
+       # print(self.단축코드, self.매도호가1, self.매수호가1)
         pass
 
     def updateGuiOptHoga(self):
          
-        optHogaChart = self.subject.get_optChart()
+        optHogaChart = copy.deepcopy(self.subject.get_optChart())
         itemcount = len(optHogaChart)
         row_no = 0
 
+  
         for j in sorted(optHogaChart):
-          #  item = QTableWidgetItem(balcv[j][])
+            #print("챠트",optHogaChart[j]['offerho1'], optHogaChart[j]['bidho1'])
+            #item = QTableWidgetItem(balcv[j][])
             row_no += 1
+
             item = QTableWidgetItem(j)
             item.setTextAlignment(Qt.AlignVCenter|Qt.AlignRight)
             self.tableWidget_2.setItem(row_no,0,item)  
@@ -118,6 +126,8 @@ class MyWindow(QMainWindow, form_class, Observer):
 
         self.tableWidget_2.setRowCount(itemcount)
         
+        threading.Timer(1,self.updateGuiOptHoga).start()
+        return True
        
 #        pass
 #----------------------------------------------------------------------------------------------------------------------     
@@ -131,6 +141,7 @@ class MyWindow(QMainWindow, form_class, Observer):
 
     def StartButton(self):
         self.controller.Start()
+        
    
     
     def EndButton(self):
@@ -146,12 +157,15 @@ class MyWindow(QMainWindow, form_class, Observer):
         else:
             event.ignore()
 
-       
+from XingAPIMonitor import *   
+from optStatMonitorSimul import *
         
 if __name__=="__main__":
     app = QApplication(sys.argv)
     optdata =  OptData() 
-    optscancon = OptScanContoller(optdata,"simulation")
+    #optstatmon = XingAPIMonitor()
+    optstatmon = optStatMonitorSimul()
+    optscancon = OptScanContoller(optdata,optstatmon)
     myWindow = MyWindow(optscancon, optdata,"simulation")
     myWindow.show()
     app.exec_()

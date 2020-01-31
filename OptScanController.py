@@ -15,6 +15,8 @@ from PyOptChegyolMon import *
 from DBanal import *
 from timeManager import *
 from PyOptCurrentPriceMon import *
+from optPurse import *
+from OptStatusMonitor import *
 
 import time
 
@@ -26,46 +28,51 @@ class OptScanContoller(ControllerInterface):
                 #subject 생성
      
         
+        
+        
         #option monitor 생성 및 등록   
         self.timemanager = timeManager()             
         self.Option_expiration_mon = self.timemanager.getTargetMonth()  #만기 달 설정 현재보다 1달 많은 다음달 
-        #self.Option_expiration_mon = "201912"
-                
-        #simulation
-        #self.optmon = PyOptHogaMonSimul.get_instance()
-        #real data
+  
         
+        
+#        self.monitor_mode = _monitor_mode
+#        if self.monitor_mode == "XingAPI":
+#            print("monitor source comes from XingAPI")
+#            
+#            self.optmon = PyOptHogaMon.get_instance()
+#      
+#            self.chekyolmon  = PyOptChegyolMon.get_instance()
+#            #체결 생성 등록
+#            #순서 중요(체결정보를 통해서 kospi 지수가 업데이트 된 이후에  진행되어야 함)
+#            self.HVmon = PyOptCurrentPriceMon() # 역사적 변동성 
+#     
+#            
+#        
+#        elif self.monitor_mode == "simulation":
+#            print("monitor source comes from simulation")
+#            
+#            self.optmon = PyOptHogaMonSimul.get_instance()
+#            self.chekyolmon  = PyOptChegyolMonSimul.get_instance()
+#            self.HVmon = PyOptCurrentPriceMonSimul() # 역사적 변동성 
+#     
+#        
+#        else:
+#            print("monitor mode is not determined")
+#            exit()
+#            
+#            
+#            
+#            
+#        self.optmon.register_subject(optdata)    
+#        self.chekyolmon.register_subject(optdata)  
+#        self.HVmon.register_subject(optdata)
         
         
         self.monitor_mode = _monitor_mode
-        if self.monitor_mode == "XingAPI":
-            print("monitor source comes from XingAPI")
-            
-            self.optmon = PyOptHogaMon.get_instance()
-      
-            self.chekyolmon  = PyOptChegyolMon.get_instance()
-            #체결 생성 등록
-            #순서 중요(체결정보를 통해서 kospi 지수가 업데이트 된 이후에  진행되어야 함)
-            self.HVmon = PyOptCurrentPriceMon() # 역사적 변동성 
-     
-            
-        
-        elif self.monitor_mode == "simulation":
-            print("monitor source comes from simulation")
-            
-            self.optmon = PyOptHogaMonSimul.get_instance()
-            self.chekyolmon  = PyOptChegyolMonSimul.get_instance()
-            self.HVmon = PyOptCurrentPriceMonSimul() # 역사적 변동성 
-            
-        
-        else:
-            print("monitor mode is not determined")
-            exit()
-            
-        self.optmon.register_subject(optdata)    
-        self.chekyolmon.register_subject(optdata)  
-        self.HVmon.register_subject(optdata)
-        
+        self.optstatmon = _monitor_mode
+        self.optstatmon.register_subject(optdata)
+
 
         # db 생성 및 observer 등록
         self.access_db = accessDB()
@@ -73,18 +80,25 @@ class OptScanContoller(ControllerInterface):
              
 
         #db analysis 생성 및 observer 등록
-        self.dbanal = DBalalysis(self.Option_expiration_mon)   
+        self.dbanal = DBalalysis(self.Option_expiration_mon, "XingAPI")   
         self.dbanal.register_subject(optdata)
+        
+        
+     
         
          
        
-    def Start(self):
+    def Start(self,optdata):
         print('start has been pushed')  
-        self.optmon.start(self.Option_expiration_mon)  
-        time.sleep(1)
-        self.chekyolmon.start(self.Option_expiration_mon)
-        time.sleep(1)
-        self.HVmon.start(self.Option_expiration_mon)       
+        
+        
+#        self.optmon.start(self.Option_expiration_mon)  
+#        time.sleep(1)
+#        self.chekyolmon.start(self.Option_expiration_mon)
+#        time.sleep(1)
+#        self.HVmon.start(self.Option_expiration_mon) 
+        #self.optstatmon.register_subject(optdata)
+        self.optstatmon.start(optdata)
 
     
     def End(self):
@@ -103,12 +117,25 @@ class OptScanContoller(ControllerInterface):
         pass
     
     
-
-
+from XingAPIMonitor import *
+from optStatMonitorSimul import *
+        
 #unit test code    
 if __name__ == "__main__":
+    
+
    # app = QApplication(sys.argv)
     optdata = OptData()
-    optmon  = OptScanContoller(optdata,"simulation")
-    optmon.Start()
+    #optstatmon = XingAPIMonitor()
+    optstatmon = optStatMonitorSimul()
+    optmon  = OptScanContoller(optdata,optstatmon)
+    
+        
+    secinfo = secInfo()                        #계좌 정보 holder
+    best = BestAccess()                        #Login class 생성
+    accounts_list = best.comm_connect(secinfo) #Login
+    #optmon  = OptScanContoller(optdata,"XingAPI")
+       
+    
+    optmon.Start(optdata)
         
