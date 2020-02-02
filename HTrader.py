@@ -146,6 +146,7 @@ class MyWindow(QMainWindow, form_class, Observer):
     
     def EndButton(self):
         self.controller.End()
+
   
     def closeEvent(self, event):
         print("event")

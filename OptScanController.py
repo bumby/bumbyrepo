@@ -103,8 +103,11 @@ class OptScanContoller(ControllerInterface):
     
     def End(self):
         print("종료")
-        self.dbanal.closeDBanal()
-    
+        self.optstatmon.end()
+        
+        self.dbanal.optvis.showDepositHistory()
+        self.dbanal.optvis.showKospi200History()
+   #     self.dbanal.closeDBanal()
         
     def AutoTradeOn(self):
         

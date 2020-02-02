@@ -22,6 +22,8 @@ class OptStatusMonitor:
         pass
     
  
+    def end(self):
+        pass
     
     @abstractmethod
 

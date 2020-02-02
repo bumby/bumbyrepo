@@ -94,7 +94,11 @@ class OptData(Subject):
         self.envStatus[key] = value 
         #self.optChanged()
         
+        
+       
+
     
+    # 외부에서 옵션 가격이 변화했을 경우 
     def change_optprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_, theoryprice_ ):
         """
         From hoga RC change_optprice changes the optchart which include hogaTime_, offerprice bid price

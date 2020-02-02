@@ -24,6 +24,8 @@ class optStatMonitorSimul(OptStatusMonitor):
         self.kospi_info = KOSPIHISTORYINFO()
         self.optcodetool = OptCodeTool()
         
+        
+        self.timerOn = True
        
 
     def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
@@ -127,7 +129,8 @@ class optStatMonitorSimul(OptStatusMonitor):
                     
                     forprinting_opt_put_index.append(i)
                     forprinting_opt_put_code.append(opt_code)
-                    forprinting_opt_put_price.append(매도호가1)               
+                    forprinting_opt_put_price.append(매도호가1)  
+                   
     
                 except:
                     #print("safe call option has not been solved" )
@@ -137,8 +140,8 @@ class optStatMonitorSimul(OptStatusMonitor):
         
     
         
-        print("call" ,forprinting_opt_call_price)
-        print("put",forprinting_opt_put_price)
+        #print("call" ,forprinting_opt_call_price)
+        #print("put",forprinting_opt_put_price)
         
         
         #만기일 지나가면 optchart에서 모두 제거
@@ -146,8 +149,9 @@ class optStatMonitorSimul(OptStatusMonitor):
         
         if self.kospi_info.get_expiration_date(current_year_month) == currday_dash:
             self.subject.clear_optchart() #챠트에서 기존
-                
-        threading.Timer(0.1,self.OnReceiveRealData).start()
+        
+        if self.timerOn == True:
+            threading.Timer(0.01,self.OnReceiveRealData).start()
         return True
         
     
@@ -160,8 +164,12 @@ class optStatMonitorSimul(OptStatusMonitor):
     def start(self,optdata):
         
         self.register_subject(optdata)
-        
         self.OnReceiveRealData()
+        self.timerOn = True
+        
+    def end(self):
+        self.timerOn = False
+        
         
     def register_subject(self, subject):
         self.subject = subject
