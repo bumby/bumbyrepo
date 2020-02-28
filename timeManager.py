@@ -12,6 +12,13 @@ class timeManager:
     def __init__(self):
         self.now = datetime.now()
             
+    def getCurrentDash(self):
+        self.now = datetime.now()
+        mon = str(self.now.month)
+        mon = mon.zfill(2)
+        self.currentdash = str(self.now.year)+"/"+mon+"/"+str(self.now.day)
+        return self.currentdash
+
     def getTodayMonth(self):
         self.now = datetime.now()
         self.currmonth  = str(self.now.year)+str(self.now.month)
@@ -50,3 +57,4 @@ if __name__ == "__main__":
     timemanager =  timeManager() #ㅐ
     print(timemanager.getTargetMonth())
     print(timemanager.getPrevYearMonth(2000,1))
+    print(timemanager.getCurrentDash())

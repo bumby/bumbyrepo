@@ -27,7 +27,7 @@ import time
 
 from subject import *
 from observer import *
-
+from timeManager import *
         
       
 class XAQueryEventHandlerT2301:
@@ -43,6 +43,7 @@ class PyOptHogaMon(Observer):
     def __init__(self):
         print("optmon has created")
         self.count = 0
+        self.tmanager = timeManager() 
         
       
     def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_): #업데이트 메서드가 실행되면 변화된 감정내용을 화면에 출력해줍니다
@@ -225,7 +226,9 @@ class PyOptHogaMon(Observer):
         이베스트 서버에서 ReceiveRealData 이벤트 받으면 실행되는 event handler
         """
         self.count += 1
-        호가시간 = self.GetFieldData("OutBlock", "hoime")
+        #호가시간 = self.GetFieldData("OutBlock", "hoime")
+        
+        호가시간 = self.tmanager.getCurrentDash()
         매도호가1 = self.GetFieldData("OutBlock", "offerho1")
         매수호가1 = self.GetFieldData("OutBlock", "bidho1")
         매도호가2 = self.GetFieldData("OutBlock", "offerho2")

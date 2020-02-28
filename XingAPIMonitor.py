@@ -33,8 +33,6 @@ class XingAPIMonitor(OptStatusMonitor):
      
             
      
-            
-
         
         
     def start(self,optdata):

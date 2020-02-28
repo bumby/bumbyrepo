@@ -23,11 +23,21 @@ import time
 class OptScanContoller(ControllerInterface):
     
     
-    def __init__(self, optdata,_monitor_mode):
+    def __init__(self, optdata,_monitor_mode, mode):
         super(OptScanContoller,self).__init__()
                 #subject 생성
      
         
+                #로그인 프로세스
+        if mode == "XingAPI":
+            self.secinfo = secInfo()
+            self.best = BestAccess()
+            self.accounts_list = self.best.comm_connect(self.secinfo)
+            self.passwd =  self.secinfo.getOrderPasswd()  
+        elif mode == "simulation":
+            self.passwd = "1234"
+        else:
+            print("not adequate mode has been selected")
         
         
         #option monitor 생성 및 등록   
@@ -75,12 +85,12 @@ class OptScanContoller(ControllerInterface):
 
 
         # db 생성 및 observer 등록
-        self.access_db = accessDB()
-        self.access_db.register_subject(optdata)     
+#        self.access_db = accessDB()
+#        self.access_db.register_subject(optdata)     
              
 
         #db analysis 생성 및 observer 등록
-        self.dbanal = DBalalysis(self.Option_expiration_mon, "XingAPI")   
+        self.dbanal = DBalalysis(self.Option_expiration_mon, mode)   
         self.dbanal.register_subject(optdata)
         
         
@@ -126,19 +136,14 @@ from optStatMonitorSimul import *
 #unit test code    
 if __name__ == "__main__":
     
-
-   # app = QApplication(sys.argv)
     optdata = OptData()
-    #optstatmon = XingAPIMonitor()
     optstatmon = optStatMonitorSimul()
     optmon  = OptScanContoller(optdata,optstatmon)
-    
-        
+            
     secinfo = secInfo()                        #계좌 정보 holder
     best = BestAccess()                        #Login class 생성
     accounts_list = best.comm_connect(secinfo) #Login
     #optmon  = OptScanContoller(optdata,"XingAPI")
-       
-    
+           
     optmon.Start(optdata)
         

@@ -12,12 +12,6 @@ import copy
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import uic
-#from sqlite_save_from_Ebest import *
-from bestConnect import *
-
-from DBanal import *
-from opt_order_tr import *
-from sec_info import *
 
 
 import pandas as pd
@@ -28,15 +22,13 @@ import datetime
 from observer import *
 from ControllerInterface import *
 
-
-
 from OptScanController import *
 from OptStatusMonitor import *
 
 form_class = uic.loadUiType("mainwindowv03.ui")[0]
 
 class MyWindow(QMainWindow, form_class, Observer):
-    def __init__(self, ControllerInterface, optdata, mode):
+    def __init__(self, ControllerInterface, optdata):
         super().__init__()
 
       
@@ -44,23 +36,22 @@ class MyWindow(QMainWindow, form_class, Observer):
         self.controller = ControllerInterface
         
         
-        #로그인 프로세스
-        if mode == "XingAPI":
-            self.secinfo = secInfo()
-            self.best = BestAccess()
-            self.accounts_list = self.best.comm_connect(self.secinfo)
-            self.passwd =  self.secinfo.getOrderPasswd()  
-        elif mode == "simulation":
-            self.passwd = "1234"
-        else:
-            print("not adequate mode has been selected")
+#        #로그인 프로세스
+#        if mode == "XingAPI":
+#            self.secinfo = secInfo()
+#            self.best = BestAccess()
+#            self.accounts_list = self.best.comm_connect(self.secinfo)
+#            self.passwd =  self.secinfo.getOrderPasswd()  
+#        elif mode == "simulation":
+#            self.passwd = "1234"
+#        else:
+#            print("not adequate mode has been selected")
 
+        
+        #ui setting
         self.setupUi(self)
 #        #자신을 observer로 등록
         self.register_subject(optdata)  
-     
-        
-        
         self.lineEdit.textChanged.connect(self.code_changed)
         self.pushButton.clicked.connect(self.StartButton)
         
@@ -158,15 +149,24 @@ class MyWindow(QMainWindow, form_class, Observer):
         else:
             event.ignore()
 
+
+
 from XingAPIMonitor import *   
 from optStatMonitorSimul import *
         
 if __name__=="__main__":
     app = QApplication(sys.argv)
-    optdata =  OptData() 
-    #optstatmon = XingAPIMonitor()
-    optstatmon = optStatMonitorSimul()
-    optscancon = OptScanContoller(optdata,optstatmon)
-    myWindow = MyWindow(optscancon, optdata,"simulation")
+    optdata =  OptData()
+    #mode = "XingAPI"
+    mode = "simulation"
+    
+    if mode == "XingAPI" :
+         optstatmon = XingAPIMonitor()  #data 획득 방법 xing api냐 simulation 이냐 에 따라 생성자 변경
+         optscancon = OptScanContoller(optdata,optstatmon, "XingAPI")
+    elif mode == "simulation":
+        optstatmon = optStatMonitorSimul()
+        optscancon = OptScanContoller(optdata,optstatmon, "simulation")
+    
+    myWindow = MyWindow(optscancon, optdata)
     myWindow.show()
     app.exec_()

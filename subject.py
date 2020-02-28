@@ -107,9 +107,9 @@ class OptData(Subject):
         self.currentCode = m_optCode_ 
         
         opt = {}
-        if m_optCode_ in self.optChart:
+        if m_optCode_ in self.optChart: 
             opt = self.optChart[m_optCode_]             
-        else:
+        else: #새로받은 옵션 정보가 기존에 없는 옵션이면 현재 option에서는 이론가와  IV 항을 가지고 있지 않으므로 강제적으로 할당
             opt["theoryPrice"] = ""
             opt["Iv"] = ""
             

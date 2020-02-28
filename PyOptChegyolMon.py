@@ -19,6 +19,7 @@ from pandas import DataFrame
 import time
 
 from subject import *
+from timeManager import *
 
 class XAQueryEventHandlerT2301:
     query_state = 0
@@ -33,7 +34,7 @@ class PyOptChegyolMon:
     def __init__(self):
         print("optmon has created")
         self.count = 0
-
+        self.tmanager = timeManager() 
 
 #temporary
     def register_subject(self, subject):
@@ -237,6 +238,8 @@ class PyOptChegyolMon:
         전일동시간대거래량 = self.GetFieldData("OutBlock", "jnilvolume")
         단축코드 = self.GetFieldData("OutBlock", "optcode")
         
+        #체결시간을 로컬 컴퓨터 시간으로 대체 
+        체결시간 = self.tmanager.getCurrentDash()
         self.subject.change_envStatus("kospi200Index",KOSPI200지수)
         self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1, 이론가)
         #print("체결발생", self.count, tr_code, 체결시간, 현재가, 시가, 매도호가1, 매수호가1, 단축코드, 장운영정보, KOSPI200지수)
@@ -263,7 +266,7 @@ class PyOptChegyolMon:
     def add_item(self, optcode):
         # 실시간데이터 요청 종목 추가
         #self.SetFieldData("InBlock", "shcode", stockcode)
-        print("flag",optcode)
+        
         self.SetFieldData("InBlock", "optcode", optcode)
         self.AdviseRealData()
 
