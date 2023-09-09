@@ -18,6 +18,7 @@ class XASessionEventHandler:
     login_state=0
     
     def OnLogin(self, code, msg):
+        print(code)
         if code == "0000":
             print("로그인성공")
             XASessionEventHandler.login_state = 1
@@ -41,10 +42,9 @@ class BestAccess:
         cert_passwd = sec_info.getCertPasswd()
 
 #실투자
-       # instXASession.ConnectServer("hts.ebestsec.co.kr",20001)
+        instXASession.ConnectServer("hts.ebestsec.co.kr",20001)
 #모의투자
-
-        instXASession.ConnectServer("demo.ebestsec.co.kr",20001)
+        #instXASession.ConnectServer("demo.ebestsec.co.kr",20001)
         instXASession.Login(id,passwd,cert_passwd,0,0)
 
         while XASessionEventHandler.login_state == 0:
