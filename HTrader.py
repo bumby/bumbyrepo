@@ -157,8 +157,8 @@ from optStatMonitorSimul import *
 if __name__=="__main__":
     app = QApplication(sys.argv)
     optdata =  OptData()
-    #mode = "XingAPI"
-    mode = "simulation"
+    mode = "XingAPI"
+    #mode = "simulation"
     
     if mode == "XingAPI" :
          optstatmon = XingAPIMonitor()  #data 획득 방법 xing api냐 simulation 이냐 에 따라 생성자 변경
