@@ -54,9 +54,9 @@ class OptData(Subject):
         self.optChart = {}
   
         #현재 kospi정보 
-        self.envStatus = {"kospi200Index":"0", "HV":"0", "옵션잔존일":"0"}        
-        
-   
+       # self.envStatus = {"kospi200Index":"0", "HV":"0", "옵션잔존일":"0"}        
+       #수정  
+        self.envStatus = {"kospi200Index":"0", "HV":"0", "옵션잔존일":"0", "콜대표IV":"0", "풋대표IV":"0"}        
         
     def register_observer(self, observer):
         if observer in self._observer_list:
@@ -95,7 +95,32 @@ class OptData(Subject):
         #self.optChanged()
         
         
+    def change_hogaprice(self, hogaTime_, m_optCode_, offerho1_, bidho1_, offerho2_, bidho2_, theoryprice_ ):
        
+        print("002 option change 스프레드 반영")
+        
+        self.currentCode = m_optCode_ 
+        
+        opt = {}
+        if m_optCode_ in self.optChart: 
+            opt = self.optChart[m_optCode_]             
+        else: #새로받은 옵션 정보가 기존에 없는 옵션이면 현재 option에서는 이론가와  IV 항을 가지고 있지 않으므로 강제적으로 할당
+            opt["theoryPrice"] = ""
+            opt["Iv"] = ""
+            
+            
+        opt["hogaTime"] = hogaTime_
+        opt["offerho1"] = offerho1_
+        opt["bidho1"] = bidho1_
+        opt["offerho2"] = offerho2_
+        opt["bidho2"] = bidho2_
+
+
+        if theoryprice_ != "":
+            opt["theoryPrice"] = theoryprice_
+
+        self.optChart[m_optCode_] = opt
+        self.optChanged()  
 
     
     # 외부에서 옵션 가격이 변화했을 경우 
@@ -104,6 +129,8 @@ class OptData(Subject):
         From hoga RC change_optprice changes the optchart which include hogaTime_, offerprice bid price
         changed kospi price, IV also can added new data
         """
+        print("002 option change 스프레드 반영")
+        
         self.currentCode = m_optCode_ 
         
         opt = {}
@@ -118,7 +145,7 @@ class OptData(Subject):
         opt["hogaTime"] = hogaTime_
         opt["offerho1"] = offerho1_
         opt["bidho1"] = bidho1_
-        
+
         if theoryprice_ != "":
             opt["theoryPrice"] = theoryprice_
 

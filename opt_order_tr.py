@@ -34,7 +34,7 @@ class XAQueryEventHandlerCFOAT00100:
     query_state = 0
 
     def OnReceiveData(self, code):
-        XAQueryEventHandlerCFOAT00100.query_state = 1   
+        #XAQueryEventHandlerCFOAT00100.query_state = 1   
         print("Order query has been completed")
     
 
@@ -71,27 +71,25 @@ class OptOrder:
         #계좌번호, 비밀번호, 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량
         instXAQueryCFOAT00100 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventHandlerCFOAT00100)
         instXAQueryCFOAT00100.ResFileName = "C:\\eBEST\\xingAPI\\Res\\CFOAT00100.res"
-        #instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","AcntNo",0,계좌번호)
-        #instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","Pwd",0,비밀번호)
         instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","AcntNo",0,self.secinfo.getOptAccount())
         instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","Pwd",0,self.secinfo.getOrderPasswd())
         instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","FnoIsuNo",0,선물옵션종목번호)
         instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","BnsTpCode",0,매매구분)
         instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","FnoOrdprcPtnCode",0,선물옵션호가유형코드)
-        instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","OrdPrc",0,주문가격)
+        instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","FnoOrdPrc",0,주문가격)  #변경되었는가?
         instXAQueryCFOAT00100.SetFieldData("CFOAT00100InBlock1","OrdQty",0,주문수량)
         instXAQueryCFOAT00100.Request(0)
          
         print("주문내용 ",self.secinfo.getOptAccount(), self.secinfo.getOrderPasswd(), 선물옵션종목번호, 매매구분, 선물옵션호가유형코드, 주문가격, 주문수량)
-        
-        while XAQueryEventHandlerCFOAT00100.query_state == 0:
-            pythoncom.PumpWaitingMessages()
-        #print("매수매도 쿼리 ", XAQueryEventHandlerCFOAT00100.query_state )
-        XAQueryEventHandlerCFOAT00100.query_state = 0
-        
-        OrdNo = instXAQueryCFOAT00100.GetFieldData("CFOAT00100OutBlock2", "OrdNo",0)            #주문번호
-        return OrdNo
-   
+#바로 처리 가능하도록
+#        while XAQueryEventHandlerCFOAT00100.query_state == 0:
+#            pythoncom.PumpWaitingMessages()
+#       
+#        XAQueryEventHandlerCFOAT00100.query_state = 0
+#        
+#        OrdNo = instXAQueryCFOAT00100.GetFieldData("CFOAT00100OutBlock2", "OrdNo",0)            #주문번호
+#        return OrdNo
+        return 1
         
     def check_chegyol(self, 종목번호, 주문번호):
         instXAQueryt0434 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventHandlert0434)
@@ -176,17 +174,17 @@ if __name__ == "__main__":
     accounts_list = best.comm_connect(secinfo) #Login 
 
     optorder = OptOrder()
-    orderno = optorder.order_option("301Q3270" , "2", "00", "7.30", "1")
+    orderno = optorder.order_option("210R4412" , "1", "00", "7.30", "1")
     print("orderno",orderno)
     cheq = 0
     allowabletime = 0
-    while cheq != 1 :
-        cheq, ordrem = optorder.check_chegyol("301Q3270",orderno)
-        print("주문번호",orderno, "체결량",cheq, "미체결잔량",  ordrem)
-        time.sleep(1)
-        allowabletime = allowabletime + 1
-        if allowabletime == 10:
-            optorder.cancel_option( "301Q3270", orderno, "1")
-            break
-    print("done")
+#    while cheq != 1 :
+#        cheq, ordrem = optorder.check_chegyol("210R4412",orderno)
+#        print("주문번호",orderno, "체결량",cheq, "미체결잔량",  ordrem)
+#        time.sleep(1)
+#        allowabletime = allowabletime + 1
+#        if allowabletime == 10:
+#            optorder.cancel_option( "210R4412", orderno, "1")
+#            break
+#    print("done")
     

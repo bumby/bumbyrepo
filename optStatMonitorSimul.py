@@ -4,12 +4,14 @@ Created on Mon Jan 27 13:08:52 2020
 
 @author: USER
 """
+import time
 import threading
 from OptStatusMonitor import *
 from subject import *
 from kospi_history import *
 from timeManager import *
 from OptCodeTool import *
+
 
 from optPurse import *
 
@@ -18,12 +20,17 @@ class optStatMonitorSimul(OptStatusMonitor):
         super(optStatMonitorSimul, self).__init__()
 
         #option monitor 생성 및 등록   
-        self.count = 0
+        #elf.count = 1500
+        self.count = 1
+        
         self.dataload()
         self.tmanager = timeManager()
         self.kospi_info = KOSPIHISTORYINFO()
         self.optcodetool = OptCodeTool()
         
+        self.calloptdata = {}
+        self.putoptdata = {}
+        self.previousday_month = 0;
         
         self.timerOn = True
        
@@ -46,12 +53,21 @@ class optStatMonitorSimul(OptStatusMonitor):
         """
         이베스트 서버에서 ReceiveRealData 이벤트 받으면 실행되는 event handler
         """
-
-        self.count += 1     
-     
-            
+        start = time.time()
+        print("start time", start)
+       
+        self.count += 1
+        print("count :  ", self.count)
+        print("001 호가 변경 event 발생")
+        
+   
+        
         cur_kospi_price = pd.to_numeric(self.df["현재지수"][self.count])
         k = self.df["일자"][self.count]
+        
+        print("0011 현재지수:",cur_kospi_price," k:",k)
+        
+
         curr_year = k[0:4]
         curr_month = k[5:7]
         curr_day = k[8:10]
@@ -85,17 +101,60 @@ class optStatMonitorSimul(OptStatusMonitor):
         
         index_range = np.arange(mintick, maxtick, 2.5) #2.5 간격으로 옵션 인덱스 범위 지정
         
-        
+        print("0012 만기월:", expire_month, " 잔여일:",remaining_days ," HV:", HV)
                   
+               
+        
+        # 달이 바뀔때만 file load를 진행 
+        # expire month와 current month 가 같으면 새롭게 로드 
+        
+        time1 = time.time()
+        print("time flag1", time1-start)
+        
         
         if curr_year in ["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018"]  :
+
+            # 달이 바뀔때만 file load 를 진행한다. 
+            if curr_month != self.previousday_month:
+                self.calloptdata = {}
+                self.subject.clear_optchart() #챠트에서 기존 챠트 내용 삭제 
+                for i in index_range:
+                    opt_code = self.optcodetool.optcode_gen(i,expire_month,'call')
+                    try:
+                        self.calloptdata[i] = pd.read_csv("./data/K"+opt_code+".csv",sep=",") # 월데이타를 가지고 있으므로 월단위로 로드가 필요하다 
+                       #print(self.calloptdata[i])    
+                    except:
+                        print("file not exist")
+                        pass
+                    
+                    opt_code = self.optcodetool.optcode_gen(i,expire_month,'put')
+                    try:
+                        self.putoptdata[i] = pd.read_csv("./data/K"+opt_code+".csv",sep=",") # 월데이타를 가지고 있으므로 월단위로 로드가 필요하다 
+                       #print(self.putoptdata[i])    
+                    except:
+                        print("file not exist")
+                        pass
+                    
+      
+        
+            self.previousday_month = curr_month;
+
+            
+            
+            
             for i in index_range:
                 opt_code = self.optcodetool.optcode_gen(i,expire_month,'call')
+        
+
                 
                 try:
-                    calloptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",")
-                    matchingdayindex = (calloptdata[calloptdata['일자'] == currday_dash])
+                #    calloptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",") // 월데이타를 가지고 있으므로 월단위로 로드가 필요하다 
+                    matchingdayindex = (self.calloptdata[i][self.calloptdata[i]['일자'] == currday_dash])
+                   #print("ith call opttion",self.calloptdata[i]['일자'])
+                   #print("currday_dash", currday_dash)
+                   #print("matiching index  = ", (self.calloptdata[i][self.calloptdata[i]['일자'] == currday_dash]))
                     
+        
                     호가시간 = k
                     매도호가1 = matchingdayindex.iloc[0]['시가']
                     매수호가1 = matchingdayindex.iloc[0]['시가']
@@ -103,21 +162,23 @@ class optStatMonitorSimul(OptStatusMonitor):
                     이론가 = "11"   
         
                     self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가) 
+                    #print("0013 호가시간,단축코드, 매도호가1,매수호가1,이론가 ")
+                    #print("     " , 호가시간,단축코드, 매도호가1,매수호가1,이론가 )
                     
                     forprinting_opt_call_index.append(i)
                     forprinting_opt_call_code.append(opt_code)
                     forprinting_opt_call_price.append(매도호가1)               
 
                 except:
-                    #print("safe call option has not been solved" )
+                    #print("safe call option has not been solved",i )
                     pass
                 
 
                 
                 opt_code = self.optcodetool.optcode_gen(i,expire_month,'put')
                 try:
-                    putoptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",")
-                    matchingdayindex = (putoptdata[putoptdata['일자'] == currday_dash])
+                   #putoptdata = pd.read_csv("./data/K"+opt_code+".csv",sep=",")
+                    matchingdayindex = (self.putoptdata[i][self.putoptdata[i]['일자'] == currday_dash])
                     
                     호가시간 = k
                     매도호가1 = matchingdayindex.iloc[0]['시가']
@@ -126,6 +187,8 @@ class optStatMonitorSimul(OptStatusMonitor):
                     이론가 = "11"   
     
                     self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,이론가)
+                    #print("0013 호가시간,단축코드, 매도호가1,매수호가1,이론가 ")
+                    #print("     " , 호가시간,단축코드, 매도호가1,매수호가1,이론가 )  
                     
                     forprinting_opt_put_index.append(i)
                     forprinting_opt_put_code.append(opt_code)
@@ -133,25 +196,28 @@ class optStatMonitorSimul(OptStatusMonitor):
                    
     
                 except:
-                    #print("safe call option has not been solved" )
+                    #print("safe call option has not been solved",i )
                     pass
                 
         
         
-    
         
-        #print("call" ,forprinting_opt_call_price)
-        #print("put",forprinting_opt_put_price)
+        print("call" ,forprinting_opt_call_price)
+        print("put",forprinting_opt_put_price)
         
         
         #만기일 지나가면 optchart에서 모두 제거
-        current_year_month = curr_year+curr_month
+        #current_year_month = curr_year+curr_month
         
-        if self.kospi_info.get_expiration_date(current_year_month) == currday_dash:
-            self.subject.clear_optchart() #챠트에서 기존
+        
+        #if self.kospi_info.get_expiration_date(current_year_month) == currday_dash:
+        #    self.subject.clear_optchart() #챠트에서 기존
+        
+        
         
         if self.timerOn == True:
-            threading.Timer(0.01,self.OnReceiveRealData).start()
+            threading.Timer(1,self.OnReceiveRealData).start()
+
         return True
         
     
@@ -162,10 +228,10 @@ class optStatMonitorSimul(OptStatusMonitor):
     
     
     def start(self,optdata):
-        
         self.register_subject(optdata)
         self.OnReceiveRealData()
         self.timerOn = True
+        
         
     def end(self):
         self.timerOn = False
@@ -185,3 +251,5 @@ if __name__ == "__main__":
     
     optdata = OptData()
     optmon.start(optdata)
+    while(1):
+        pass

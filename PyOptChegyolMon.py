@@ -194,6 +194,9 @@ class PyOptChegyolMon:
         self.subject.change_envStatus("HV",histimpv)
         self.subject.change_envStatus("kospi200Index",gmprice)
         self.subject.change_envStatus("옵션잔존일",jandatecnt)
+        #수정 대표 IV 추가 
+        self.subject.change_envStatus("콜대표IV",cimpv) 
+        self.subject.change_envStatus("풋대표IV",pimpv)
         return ohlcv, ohlcv2    
     
 #--------------------------
@@ -243,7 +246,7 @@ class PyOptChegyolMon:
         self.subject.change_envStatus("kospi200Index",KOSPI200지수)
         self.subject.change_optprice(체결시간,단축코드,매도호가1,매수호가1, 이론가)
         #print("체결발생", self.count, tr_code, 체결시간, 현재가, 시가, 매도호가1, 매수호가1, 단축코드, 장운영정보, KOSPI200지수)
-        
+        print("che")
 
     def start(self,  Option_expiration_mon):
         """

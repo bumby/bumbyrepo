@@ -87,20 +87,20 @@ class optPurse:
         cheq = 0
         allowabletime = 0
         success = True
-        while qty != cheq :
-            qty, cheq, ordrem = self.optorder.check_chegyol(optionname, orderno)
-            print("주문번호",orderno, "체결량",cheq, "미체결잔량",  ordrem)
-            time.sleep(1)
-            allowabletime = allowabletime + 1
-            if allowabletime == 10:
-                self.optorder.cancel_option( optionname, orderno, "1")
-                print("order has been canceled")
-                success = False
-                break
-        print("sell option completed")
-        #deposit 갱신
-        time.sleep(1)
-        self.getOptInfoFromServer()
+#        while qty != cheq :
+#            qty, cheq, ordrem = self.optorder.check_chegyol(optionname, orderno)
+#            print("주문번호",orderno, "체결량",cheq, "미체결잔량",  ordrem)
+#            time.sleep(1)
+#            allowabletime = allowabletime + 1
+#            if allowabletime == 10:
+#                self.optorder.cancel_option( optionname, orderno, "1")
+#                print("order has been canceled")
+#                success = False
+#                break
+#        print("sell option completed")
+#        #deposit 갱신
+#        time.sleep(1)
+#        self.getOptInfoFromServer()
         return success
             
     def BuyOption(self, optionname, ordcode, price, no):
@@ -111,20 +111,20 @@ class optPurse:
         cheq = 0
         allowabletime = 0
         success = True
-        while qty != cheq :
-            qty, cheq, ordrem = self.optorder.check_chegyol(optionname, orderno)
-            print("주문번호",orderno,"주문량",qty,  "체결량",cheq, "미체결잔량",  ordrem)
-            time.sleep(1)
-            allowabletime = allowabletime + 1
-            if allowabletime == 10:
-                self.optorder.cancel_option( optionname, orderno, "1")
-                print("order has been canceled")
-                success = False
-                break
-        print("buy option completed")
-        #deposit 갱신
-        time.sleep(1)
-        self.getOptInfoFromServer()
+#        while qty != cheq :
+#            qty, cheq, ordrem = self.optorder.check_chegyol(optionname, orderno)
+#            print("주문번호",orderno,"주문량",qty,  "체결량",cheq, "미체결잔량",  ordrem)
+#            time.sleep(1)
+#            allowabletime = allowabletime + 1
+#            if allowabletime == 10:
+#                self.optorder.cancel_option( optionname, orderno, "1")
+#                print("order has been canceled")
+#                success = False
+#                break
+#        print("buy option completed")
+#        #deposit 갱신
+#        time.sleep(1)
+#        self.getOptInfoFromServer()
         return success        
         
     def GetDepositInfo(self): 
@@ -260,7 +260,7 @@ class optPurseSimul:
     
         """
         
-        
+        print("004 옵션 매도")
         #기존에 있던 option인가? 
         self.deposit = self.deposit + price*no*self.unitprice
         
@@ -285,6 +285,8 @@ class optPurseSimul:
         if optpresence == False:
             newopt = np.array([optionname, price, no])
             self.soldopt = np.vstack((self.soldopt,newopt))
+    
+    
       
             
         
@@ -309,6 +311,7 @@ class optPurseSimul:
         stack soldopt = ['name','price', 'no']
     
         """
+        print("buy opttion called")
         
         self.deposit = self.deposit - price*no*self.unitprice
   
@@ -331,7 +334,9 @@ class optPurseSimul:
         if optpresence == False: 
             newopt = np.array([optionname, price, no])
             self.boughtopt = np.vstack((self.boughtopt,newopt))
-            
+        
+        
+        
         
     def GetDepositInfo(self): 
         return self.deposit      
@@ -513,68 +518,77 @@ class optPurseSimul:
         
 if __name__=="__main__":
     
+  #hts ordertest  
+    
+    secinfo = secInfo() #계좌 정보 holder
+    
+    bestaccess = BestAccess()
+    bestaccess.comm_connect(secinfo)
+    
+    
     optpurse = optPurse()
-    
     #2월 220 call option 매도  5000000 총액 35000000
-    optpurse.SellOption("201Q3280","00",2.89,1)
+    optpurse.SellOption("201R4417","00",2.89,1)
     print(optpurse.soldopt)
     print("deposit",optpurse.deposit)
     
-    #2월 220 call option 매도 2500000 추가   총액 37500000
-    optpurse.SellOption("201Q3280","00",2.89,1)
-    print(optpurse.soldopt)
-    print("deposit",optpurse.deposit)
-    #2월 220 call option 매도 15000000 추가 총액 52500000
-    optpurse.SellOption("201Q3280","00",2.89,3)
-    print(optpurse.soldopt)
-    print("deposit",optpurse.deposit)
-    
-    #3월 230 call option 매도 15000000  감소 총액 67500000
-    optpurse.SellOption("201Q3280","00",2.89,3)
-    print(optpurse.soldopt)
-    print("deposit",optpurse.deposit)
-    
-    #2월 220 call option 매수 15000000 감소 총액 52500000
-    optpurse.BuyOption("201Q3280","00",2.89,3)
-    print(optpurse.boughtopt)
-    print("deposit",optpurse.deposit)
-    
-    #3월 230 call option 매수 15000000 감소 총액 37500000 
-    optpurse.BuyOption("201Q3280","00",2.89,3)
-    print(optpurse.boughtopt)
-    print("deposit",optpurse.deposit)
-    
-    print(" ")
-    print("매도",optpurse.soldopt)
-    print("매수",optpurse.boughtopt)
-    print("deposit",optpurse.deposit)
-    
-
-    
-    #code = optpurse.ExpirationOptionScan("201902")
-    optpurse.ExpirationProcess("201902", 280.0)
-    
-    
-    #2월 220 모두 청산 240-220 손해 20*250000*5 25000000 감소 총액  12500000
-    #2월 230 모두 청산 230-220 손해 10*250000*3 7500000  감소 총액   5000000
-    #2월 사놓았던      240-220 이익 20*250000*3 15000000 증가 총액  20000000  
-    #2월 사놓았던      230-220 이익 10*250000*3 7500000  증가 총액  27500000  
-    
-    print(optpurse.soldopt) 
-    print(optpurse.boughtopt)
-    est = optpurse.expireEstForCurrentPortfolio(230.0,"202003")
-    print("만기추정", est)
-    #230 모두 청산 230-220 손해 10*250000*5 12500000  감소 총액   -12500000
-                         #  이익 10*250000*3 75000000 증가 총액   +75000000    
-    min = optpurse.MinEstForCurrentPortfolio(230.0,"202003")
-    print("만기 최소값",min)
-    
-    
-         
-    print("매도",optpurse.soldopt)
-    print("매수",optpurse.boughtopt)
-    print("deposit",optpurse.deposit)
-    
+#    
+#    
+#    #2월 220 call option 매도 2500000 추가   총액 37500000
+#    optpurse.SellOption("201Q3280","00",2.89,1)
+#    print(optpurse.soldopt)
+#    print("deposit",optpurse.deposit)
+#    #2월 220 call option 매도 15000000 추가 총액 52500000
+#    optpurse.SellOption("201Q3280","00",2.89,3)
+#    print(optpurse.soldopt)
+#    print("deposit",optpurse.deposit)
+#    
+#    #3월 230 call option 매도 15000000  감소 총액 67500000
+#    optpurse.SellOption("201Q3280","00",2.89,3)
+#    print(optpurse.soldopt)
+#    print("deposit",optpurse.deposit)
+#    
+#    #2월 220 call option 매수 15000000 감소 총액 52500000
+#    optpurse.BuyOption("201Q3280","00",2.89,3)
+#    print(optpurse.boughtopt)
+#    print("deposit",optpurse.deposit)
+#    
+#    #3월 230 call option 매수 15000000 감소 총액 37500000 
+#    optpurse.BuyOption("201Q3280","00",2.89,3)
+#    print(optpurse.boughtopt)
+#    print("deposit",optpurse.deposit)
+#    
+#    print(" ")
+#    print("매도",optpurse.soldopt)
+#    print("매수",optpurse.boughtopt)
+#    print("deposit",optpurse.deposit)
+#    
+#
+#    
+#    #code = optpurse.ExpirationOptionScan("201902")
+#    optpurse.ExpirationProcess("201902", 280.0)
+#    
+#    
+#    #2월 220 모두 청산 240-220 손해 20*250000*5 25000000 감소 총액  12500000
+#    #2월 230 모두 청산 230-220 손해 10*250000*3 7500000  감소 총액   5000000
+#    #2월 사놓았던      240-220 이익 20*250000*3 15000000 증가 총액  20000000  
+#    #2월 사놓았던      230-220 이익 10*250000*3 7500000  증가 총액  27500000  
+#    
+#    print(optpurse.soldopt) 
+#    print(optpurse.boughtopt)
+#    est = optpurse.expireEstForCurrentPortfolio(230.0,"202003")
+#    print("만기추정", est)
+#    #230 모두 청산 230-220 손해 10*250000*5 12500000  감소 총액   -12500000
+#                         #  이익 10*250000*3 75000000 증가 총액   +75000000    
+#    min = optpurse.MinEstForCurrentPortfolio(230.0,"202003")
+#    print("만기 최소값",min)
+#    
+#    
+#         
+#    print("매도",optpurse.soldopt)
+#    print("매수",optpurse.boughtopt)
+#    print("deposit",optpurse.deposit)
+#    
 
  
     

@@ -10,3 +10,7 @@
 /staticWinningrateStrategyData
 /__pycache__
 /sec_info.py
+/OptStrategy.py
+kospi200Simulation_refactoring.py
+crawl_opt_data.py
+test_crawling.py

@@ -24,6 +24,7 @@ class timeManager:
         self.currmonth  = str(self.now.year)+str(self.now.month)
         return self.currmonth
         
+    #다음달 잔여일 30일 이상 차월 선택 
     def getTargetMonth(self):
         self.now = datetime.now()
         self.nextmonthyear = self.now.year
@@ -32,6 +33,24 @@ class timeManager:
             self.nextmonthyear = self.nextmonthyear + 1 
         self.targetmonth = str(self.nextmonthyear)+str(self.nextmonth).zfill(2)
         return self.targetmonth
+    
+    def getCurrentHourMinSec(self):
+        self.now = datetime.now()
+        self.currentHMS=self.now.hour*10000+self.now.minute*100+self.now.second
+        return str(self.currentHMS)
+    #다음달 잔여일 30일 이하 2달후 선택 
+#    def getTargetMonth(self):
+#        self.now = datetime.now()
+#        self.nextmonthyear = self.now.year
+#        self.next2month = ((self.now.month)%12)+2
+#        if self.next2month == 1:
+#            self.nextmonthyear = self.nextmonthyear + 1 
+#        elif self.next2month == 2:
+#            self.nextmonthyear = self.nextmonthyear + 1 
+#        self.target2month = str(self.nextmonthyear)+str(self.next2month).zfill(2)
+#        return self.target2month
+#    
+       
         
     def getNextYearMonth(self, curr_year,curr_month):
         nextmonthyear = curr_year
@@ -56,5 +75,6 @@ if __name__ == "__main__":
    
     timemanager =  timeManager() #ㅐ
     print(timemanager.getTargetMonth())
-    print(timemanager.getPrevYearMonth(2000,1))
+    print(timemanager.getPrevYearMonth(2000,12))
     print(timemanager.getCurrentDash())
+    print(timemanager.getCurrentHourMinSec())

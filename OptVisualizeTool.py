@@ -23,16 +23,20 @@ class OptVisualizeTool():
         self.deposit_history = []
         self.upperbound_history = []
         self.lowerbound_history = []
-        
+        self.upperbound_IV_history = []
+        self.lowerbound_IV_history = []
+        self.insideband_history = [] # 1: 만기시 band kospi가 band 안에 존재 0: 존재 X
+        self.callProfitRatio_history = []
+        self.putProfitRatio_history = []
+             
         self.expiration_value_history = []
         self.optmin_history = []
-        
-        
+        self.HV_history = []
+        self.IV_history = []
+             
         self.fig = plt.figure()
  
-        
-    
-        
+             
     def stackDeposit(self, date, deposit):
         """
         from date and deposit data 
@@ -50,13 +54,7 @@ class OptVisualizeTool():
         self.deposit_history.append(deposit)
         
         
-    def showDepositHistory(self):
-        self.a = self.fig.add_subplot(2,1,1)
-        step = 90
-        plt.xticks(np.arange(0,len(self.date_history),step),self.date_history[1:len(self.date_history):step],rotation=20)
-        self.a.plot(self.deposit_history)
-        self.a.plot(self.optmin_history)
-        
+
     
     def stackDate(self, curDate):
         self.date_history.append(curDate) 
@@ -70,29 +68,59 @@ class OptVisualizeTool():
     def stackLowerBound(self, date, lowerbound):
         self.lowerbound_history.append(lowerbound) 
         
+    def stackUpperIVBound(self, date, upperbound_IV):
+        self.upperbound_IV_history.append(upperbound_IV) 
+
+    def stackLowerIVBound(self, date, lowerbound_IV):
+        self.lowerbound_IV_history.append(lowerbound_IV) 
+        
+    def stackinsideBand(self, date, inside_state):
+        self.insideband_history.append(inside_state)
+        
     def stackExpirationValue(self, expirationvalue):
         self.expiration_value_history.append(expirationvalue) 
+        
+    def stackCallProfitRatio(self, date, callProfitRatio):
+        self.callProfitRatio_history.append(callProfitRatio) 
 
-
+    def stackPutProfitRatio(self, date, putProfitRatio):
+        self.putProfitRatio_history.append(putProfitRatio) 
+        
+        
 
     def stackMinValue(self, minvalue):
         self.optmin_history.append(minvalue)     
+   
+    def stackHVValue(self, HV):
+        self.HV_history.append(HV)     
         
+    def stackIVValue(self, IV):
+        self.IV_history.append(IV)     
+               
+    def showDepositHistory(self):
+        self.a = self.fig.add_subplot(4,1,1)
+        step = 90
+        plt.xticks(np.arange(0,len(self.date_history),step),self.date_history[1:len(self.date_history):step],rotation=20)
+        self.a.plot(self.deposit_history)
+        self.a.plot(self.optmin_history)
+        self.a.legend(['deposit','optmin'])
+            
     
     def showKospi200History(self):
-        self.b = self.fig.add_subplot(2,1,2, sharex = self.a)
-        self.b.plot(self.kospi200_history)
+        self.b = self.fig.add_subplot(4,1,2, sharex = self.a)
+        self.b.plot(self.kospi200_history,label=['kospi200_history'])
         self.b.plot(self.upperbound_history)
         self.b.plot(self.lowerbound_history)
+
         self.b.plot(self.expiration_value_history)
+        self.b.legend(['kospi200_history','upperbound','lowerbound','expiration_value_history'])
         
-        plt.show()
-    
+        #plt.show()
 
 ############################# 옵션 만기 이익 분포도
     def showProfitDistribution(self, optpurse, current_price, expiration_year_month):
         self.fig2 = plt.figure()
-        self.c = self.fig2.add_subplot(1,1,1)
+        self.c = self.fig2.add_subplot(1,1,2)
         
         
         mintick = int(current_price-30.0)
@@ -112,9 +140,25 @@ class OptVisualizeTool():
         self.fig2.show()
         plt.show()
         
+    def showSuccessProbability(self):
+        self.d = self.fig.add_subplot(4,1,3, sharex = self.a)
+        self.d.plot(self.insideband_history)
+        self.d.plot(self.HV_history)
+        self.d.plot(self.IV_history)
+        #self.b.plot(self.upperbound_IV_history)
+        #self.b.plot(self.lowerbound_IV_history)
+        self.d.legend(['insideband_ratio', '30HV','IV'])
+       # self.fig3.show()
+        #plt.show()
     
+    def showProfitRatio(self):
+        self.f = self.fig.add_subplot(4,1,4, sharex = self.a)
+        self.f.plot(self.callProfitRatio_history)
+        self.f.plot(self.putProfitRatio_history)
+        self.f.legend(['callProfitRatio','putProfitRatio'])
+       # self.fig3.show()
+        plt.show()
     
-
    #unit test code    
  
     
@@ -128,7 +172,7 @@ if __name__ == "__main__":
     optvis.stackDeposit("123",17)
    
     optvis.showDepositHistory()
-    optpurse = optPurse("simulation")
+    optpurse = optPurseSimul()
     
     #2월 220 call option 매도  5000000 총액 35000000
     optpurse.SellOption("201P2220",20.0,1)

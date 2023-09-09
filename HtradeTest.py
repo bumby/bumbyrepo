@@ -1,55 +1,109 @@
-import unittest
-from subject import *
-from PyOptHogaMonSimul import *
+# -*- coding: utf-8 -*-
 
+import sys
+import threading
+import copy
+import pandas as pd
+import sqlite3
+import datetime
 
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5 import uic
 
-class optChartTest(unittest.TestCase):
-    """
-    Documentation for a class.
+from observer import *
+from ControllerInterface import *
+from OptScanController import *
+from OptStatusMonitor import *
+from XingAPIMonitor import *  
+from optStatMonitorSimul import *
 
-    More details
-    this class is for test of optChart manager functions which gathers the information of hoga, and contract of option   
-    from RC event
-    """ 
+form_class = uic.loadUiType("mainwindowv03.ui")[0]
 
-    def test_optChartMemberCheck(self):
-        """
-        this function is for the test that whether the inserted item in optChart is correct.
-        """
-        self.optdata = OptData() 
-        self.optdata.change_optprice("091213", "201P3450", "3.0", "4.0", "")
-        c = self.optdata.get_optChart()
-        self.assertEqual(c["201P3450"]["hogaTime"], "091213")
-        self.assertEqual(c["201P3450"]["offerho1"], "3.0")
-        self.assertEqual(c["201P3450"]["bidho1"], "4.0") #item comparison
-    
-    
-    def test_optChartInsersion(self):
-        """
-        this functino is for the test that whether several options gathered in optChart is properly inserted or deleted intentionally
-        """
-        self.optdata = OptData()
-        self.optdata.change_optprice("091215", "201P3650", "3.0", "4.0", "")
-        self.optdata.change_optprice("091213", "201P3450", "5.0", "4.0", "")
-        self.optdata.change_optprice("091220", "201C3850", "10.0", "8.0", "")
-        c = self.optdata.get_optChart()
-        #print(c)
-        self.assertEqual(c["201P3650"]["offerho1"], "3.0")
-        self.assertEqual(len(c), 3)  #dictionary size comparison
-        del self.optdata.get_optChart()["201P3650"]
-        c = self.optdata.get_optChart()
-        #print(c)
-        self.assertEqual(len(c), 2)
+class MyWindow(QMainWindow, form_class, Observer):
 
+    def __init__(self, ControllerInterface, optdata):
+        super().__init__()
         
-class HogaMonSimulTest(unittest.TestCase):
-    
-    def test_dataload(self):
-        self.optmon = PyOptHogaMonSimul.get_instance()
-        c = self.optmon.getSampleSize()
-        #print(c)
-        self.assertEqual(c,0)
+        self.controller = ControllerInterface
+        self.setupUi(self)
+        self.register_subject(optdata)  
+        
+        self.lineEdit.textChanged.connect(self.code_changed)
+        self.pushButton.clicked.connect(self.StartButton)
+        self.controller.Start(optdata) 
+        self.updateGuiOptHoga()
 
-if __name__ == '__main__':
-    unittest.main()
+    def update(self, 호가시간_, 단축코드_, 매도호가1_, 매수호가1_, 이론가_):
+        self.단축코드=단축코드_
+        self.호가시간=호가시간_
+        self.매도호가1=매도호가1_
+        self.매수호가1=매수호가1_
+        self.이론가 = 이론가_
+       
+        self.display()
+        #self.updateGuiOptHoga()
+
+    def register_subject(self, subject):
+        self.subject = subject
+        self.subject.register_observer(self)
+
+    def display(self):
+        pass
+
+    def updateGuiOptHoga(self):
+        optHogaChart = copy.deepcopy(self.subject.get_optChart())
+        itemcount = len(optHogaChart)
+        row_no = 0
+
+        for j in sorted(optHogaChart):
+            row_no += 1
+
+            self.tableWidget_2.setItem(row_no, 0, self.create_table_item(j))
+            self.tableWidget_2.setItem(row_no, 1, self.create_table_item(optHogaChart[j]['offerho1']))
+            self.tableWidget_2.setItem(row_no, 2, self.create_table_item(optHogaChart[j]['bidho1']))
+            self.tableWidget_2.setItem(row_no, 3, self.create_table_item(self.subject.envStatus["kospi200Index"]))
+            self.tableWidget_2.setItem(row_no, 4, self.create_table_item(self.subject.envStatus["옵션잔존일"]))
+            self.tableWidget_2.setItem(row_no, 5, self.create_table_item(self.subject.envStatus["HV"]))
+
+        self.tableWidget_2.setRowCount(itemcount)
+        threading.Timer(1, self.updateGuiOptHoga).start()
+
+    def create_table_item(self, text):
+        item = QTableWidgetItem(str(text))
+        item.setTextAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        return item
+
+    def code_changed(self):
+        print("code changed")
+        code = self.lineEdit.text()
+        name = self.best.get_master_code_name(code)
+        self.lineEdit_2.setText(name)
+
+    def StartButton(self):
+        self.controller.Start()
+    
+    def EndButton(self):
+        self.controller.End()
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Message', "Are you sure to quit?", QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.controller.End()
+            event.accept()
+        else:
+            event.ignore()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    optdata = OptData()
+    mode = "XingAPI"
+
+    if mode == "XingAPI":
+        optstatmon = XingAPIMonitor()  
+        optscancon = OptScanContoller(optdata, optstatmon, "XingAPI")
+    elif mode == "simulation":
+        optstatmon = optStatMonitorSimul()
+    myWindow = MyWindow(optscancon, optdata)
+    myWindow.show()
+    app.exec_()

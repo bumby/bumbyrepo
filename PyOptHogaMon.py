@@ -151,7 +151,7 @@ class PyOptHogaMon(Observer):
             ohlcv['impv'].append(impv)
             ohlcv['gmprice'].append(gmprice)
             
-            print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice)
+            print(actprice, optcode, price, sign,  diff, volume, iv, mgjv, mgjvupdn, offerho1, bidho1, cvolume, delt, gama, vega, ceta, rhox, theoryprice, cimpv)
             self.subject.change_optprice(timevl,optcode,offerho1,bidho1,theoryprice)
         
         count = instXAQueryT2301.GetBlockCount("t2301OutBlock2")
@@ -211,7 +211,7 @@ class PyOptHogaMon(Observer):
             ohlcv2['impv'].append(impv2)
             ohlcv2['gmprice'].append(gmprice)
                  
-            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2)
+            print(actprice2,optcode2, price2, sign2,  diff2, volume2, iv2, mgjv2, mgjvupdn2, offerho12, bidho12, cvolume2, delt2, gama2, vega2, ceta2, rhox2, theoryprice2, pimpv)
             self.subject.change_optprice(timevl2,optcode2,offerho12,bidho12,theoryprice2)
         
 #        self.subject.print_opt()
@@ -236,7 +236,12 @@ class PyOptHogaMon(Observer):
         단축코드 = self.GetFieldData("OutBlock", "optcode")
         
         # 변경 
-        self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,"")
+        #self.subject.change_optprice(호가시간,단축코드, 매도호가1,매수호가1,"")
+        try:
+            self.subject.change_hogaprice(호가시간,단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2, "" )
+            print("h")
+        except:
+            print("호가 모니터링 에러 발생")
         #print("호가발생", self.count, tr_code, 호가시간, 단축코드, 매도호가1, 매수호가1, 매도호가2, 매수호가2)
       
 
@@ -370,7 +375,7 @@ class PyOptHogaMonSimul(PyOptHogaMon):
         
         index_range = np.arange(mintick, maxtick, 2.5)
         
-        if curr_year in ["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018"]  :
+        if curr_year in ["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022"]  :
             for i in index_range:
                 opt_code = self.simulmonitor.optcodetool.optcode_gen(i,expire_month,'call')
                 

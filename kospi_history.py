@@ -11,66 +11,6 @@ from timeManager import *
 import math
 
 
-#data = pd.read_csv("kospi200data.csv",sep=",")
-#
-#data.head()
-#df = data[["일자","현재지수"]]
-#print(df["일자"])
-#
-#dff = df["현재지수"]
-#
-#res = []
-#
-#
-#opt_expire_date = [
-#    "2013/01/10","2013/02/14","2013/03/14","2013/04/11","2013/05/09","2013/06/13","2013/07/11","2013/08/08","2013/09/12","2013/10/10","2013/11/14","2013/12/12",
-#    "2014/01/09","2014/02/13","2014/03/13","2014/04/10","2014/05/08","2014/06/12","2014/07/10","2014/08/14","2014/09/11","2014/10/08","2014/11/13","2014/12/11",
-#    "2015/01/08","2015/02/12","2015/03/12","2015/04/09","2015/05/14","2015/06/11","2015/07/09","2015/08/13","2015/09/10","2015/10/08","2015/11/12","2015/12/10",
-#    "2016/01/14","2016/02/11","2016/03/10","2016/04/14","2016/05/12","2016/06/09","2016/07/14","2016/08/11","2016/09/08","2016/10/13","2016/11/10","2016/12/08",
-#    "2017/01/12","2017/02/09","2017/03/09","2017/04/13","2017/05/11","2017/06/08","2017/07/13","2017/08/10","2017/09/14","2017/10/12","2017/11/09","2017/12/14",
-#    "2018/01/11", "2018/02/08", "2018/03/08", "2018/04/12","2018/05/10", "2018/06/14","2018/07/12", "2018/08/09","2018/09/13","2018/10/11","2018/11/08","2018/12/13"
-#    "2019/01/10","2019/02/14","2019/03/14","2019/04/11", "2019/05/09","2019/06/13","2019/07/11","2019/08/08","2019/09/11","2019/10/10","2019/11/14","2019/12/12"
-#    ]
-#
-#
-#
-#
-#expire_index = 1
-##for i in range(2994,df["현재지수"].size):
-#
-##HV 산출
-#
-#
-#
-#
-#for i in range(2994,4428):
-#    j=0
-#    while  df["일자"][i+j]!=opt_expire_date[expire_index]: #만기일 찾기
-#        j=j+1
-#
-#        
-#    print(i, df["일자"][i],df["일자"][i+j],opt_expire_date[expire_index], j, df["현재지수"][i+j],df["현재지수"][i] ,(df["현재지수"][i+j]-df["현재지수"][i])/df["현재지수"][i])
-#    res.append((df["현재지수"][i+j]-df["현재지수"][i])/df["현재지수"][i]) #만기일의 지수값과 현재 지수값의 차이 추출
-#
-#    if df["일자"][i]==df["일자"][i+j]:
-#        expire_index = expire_index + 1
-#    
-#
-#print(res)
-#
-##plt.plot.line(res)
-#reslist = pd.Series(res)
-#plt.figure(1)
-#reslist.plot.hist(grid=True, bins=50, rwidth=1, color='#607c8e')
-#plt.title('target option 괴리율 distribution')
-#plt.xlabel('괴리율')
-#plt.ylabel('counts')
-#plt.grid(axis='y', alpha=0.75)
-##res.plot.hist(grid=True, bins=50, rwidth=1, color='#607c8e')
-#
-##print(opt_expire_date)
-#plt.show()    
-
 
 class HistVol:
     def __init__(self):
@@ -102,7 +42,6 @@ class HistVol:
         #print(Rt)
         STD = math.sqrt(sum/(self.N-2))*100
         self.HV  = STD*math.sqrt(252)
-        #print("STD",STD ,"HV", self.HV)
         return self.HV
     
     
@@ -115,12 +54,13 @@ class KOSPIHISTORYINFO:
     def __init__(self):
         
        
-        self.data = pd.read_csv("kospi200data.csv",sep=",")
+        self.data = pd.read_csv("kospi200_added_To_2022.csv",sep=",")
+        #self.data = pd.read_csv("kospi200.csv",sep=",")
         self.data.head()
         self.df = self.data[["일자","현재지수"]]
-        #print(self.df["일자"])
-        #self.dff = df["현재지수"] 
-
+        
+        print("df",self.df)
+     
         self.opt_expire_dict = { "200601":"2006/01/12","200602":"2006/02/09","200603":"2006/03/09","200604":"2006/04/13","200605":"2006/05/11","200606":"2006/06/08","200607":"2006/07/13","200608":"2006/08/10","200609":"2006/09/14","200610":"2006/10/12","200611":"2006/11/09","200612":"2006/12/14"\
                                 ,"200701":"2007/01/11","200702":"2007/02/08","200703":"2007/03/08","200704":"2007/04/12","200705":"2007/05/10","200706":"2007/06/14","200707":"2007/07/12","200708":"2007/08/09","200709":"2007/09/13","200710":"2007/10/11","200711":"2007/11/08","200712":"2007/12/13"\
                                 ,"200801":"2008/01/10","200802":"2008/02/14","200803":"2008/03/13","200804":"2008/04/10","200805":"2008/05/08","200806":"2008/06/12","200807":"2008/07/10","200808":"2008/08/14","200809":"2008/09/11","200810":"2008/10/09","200811":"2008/11/13","200812":"2008/12/11"\
@@ -134,9 +74,11 @@ class KOSPIHISTORYINFO:
                                 ,"201601":"2016/01/14","201602":"2016/02/11","201603":"2016/03/10","201604":"2016/04/14","201605":"2016/05/12","201606":"2016/06/09","201607":"2016/07/14","201608":"2016/08/11","201609":"2016/09/08","201610":"2016/10/13","201611":"2016/11/10","201612":"2016/12/08"\
                                 ,"201701":"2017/01/12","201702":"2017/02/09","201703":"2017/03/09","201704":"2017/04/13","201705":"2017/05/11","201706":"2017/06/08","201707":"2017/07/13","201708":"2017/08/10","201709":"2017/09/14","201710":"2017/10/12","201711":"2017/11/09","201712":"2017/12/14"\
                                 ,"201801":"2018/01/11","201802":"2018/02/08","201803":"2018/03/08","201804":"2018/04/12","201805":"2018/05/10","201806":"2018/06/14","201807":"2018/07/12","201808":"2018/08/09","201809":"2018/09/13","201810":"2018/10/11","201811":"2018/11/08","201812":"2018/12/13"\
-                                }
-                                #,"2019/01/10","2019/02/14","2019/03/14","2019/04/11", "2019/05/09","2019/06/13","2019/07/11","2019/08/08","2019/09/11","2019/10/10","2019/11/14","2019/12/12"
-
+                                ,"201901":"2019/01/10","201902":"2019/02/14","201903":"2019/03/14","201904":"2019/04/11","201905":"2019/05/09","201906":"2019/06/13","201907":"2019/07/11","201908":"2019/08/08","201909":"2019/09/11","201910":"2019/10/10","201911":"2019/11/14","201912":"2019/12/12"\
+                                ,"202001":"2020/01/09","202002":"2020/02/13","202003":"2020/03/12","202004":"2020/04/09","202005":"2020/05/14","202006":"2020/06/11","202007":"2020/07/09","202008":"2020/08/13","202009":"2020/09/10","202010":"2020/10/08","202011":"2020/11/12","202012":"2020/12/10"\
+                                ,"202101":"2021/01/14","202102":"2021/02/10","202103":"2021/03/11","202104":"2021/04/08","202105":"2021/05/13","202106":"2021/06/10","202107":"2021/07/08","202108":"2021/08/12","202109":"2021/09/09","202110":"2021/10/14","202111":"2021/11/11","202112":"2021/12/09"\
+                                ,"202201":"2022/01/13","202202":"2022/02/10","202203":"2022/03/10","202204":"2022/04/14","202205":"2022/05/12","202206":"2022/06/09","202207":"2022/07/14","202208":"2022/08/11","202209":"2022/09/08","202210":"2022/10/13","202211":"2022/11/10","202212":"2022/12/08"}
+        
         self.timemanager =  timeManager()
         self.histvol = HistVol()
         
@@ -255,15 +197,17 @@ class KOSPIHISTORYINFO:
         try:
             f1 = self.df[self.df['일자']==current_year_month_date]
             f2 = self.df[self.df['일자']==self.get_expiration_date(expiration_year_month)]
-            
+                        
             remaining_days = f2.index[0]-f1.index[0]
             
+            print("f1", f1, "f2", f2, "remaining_days", remaining_days  )
+            
             if remaining_days < 0 :
-                print("error at get_remaining_days!!!", "current_year_month_date", current_year_month_date, "expiration_year_month",expiration_year_month )
+                print("Excel Date format should be yyyy/mm/dd","error at get_remaining_days!!! ", "remaining day=", remaining_days, " current_year_month_date", current_year_month_date, "expiration_year_month",expiration_year_month )
                 return -1
             else:
                 return remaining_days
-            
+                
         except:
             print("error at get_remaining_days!!!", "current_year_month_date", current_year_month_date, "expiration_year_month",expiration_year_month )
             return -1
@@ -341,11 +285,11 @@ class KOSPIHISTORYINFO:
         curr_date_index = f1.index[0]
         
         
-        if(curr_date_index < 30):
+        if(curr_date_index < 30):  #한달의 약 
             print("data is less than 90days0!!!")
             exit()
         
-        i = curr_date_index-30
+        i = curr_date_index - 30
         self.stack_30day = []
         while i<curr_date_index:
             i=i+1
@@ -356,21 +300,43 @@ class KOSPIHISTORYINFO:
 
   
       
-    def currentTargetOptBand(self, current_kospi_200, current_HV, remained_day):
+#    def currentTargetOptBand(self, current_kospi_200, current_HV, remained_day):
+#        kospi200price = pd.to_numeric(current_kospi_200)
+#        
+#        jandatecnt = remained_day
+#        HV = current_HV
+#        #jandatecnt = pd.to_numeric(remained_day)
+#        #HV =  pd.to_numeric(current_HV) #1.2 는 증폭 ratio이다. 
+#        #self.HV = 13.46 #전광판엑서 제공한함 다른 방법 필요
+#        
+#        target_sigma = 0.8 # 기준 1.3 은 90% 승률       
+#        sigma = HV/100.0*math.sqrt(jandatecnt/252.0)
+#        upperTarget = math.exp(math.log(kospi200price)+sigma*target_sigma) #1.3은 normal distribution 90% 범위
+#        lowerTarget = math.exp(math.log(kospi200price)-sigma*target_sigma) #1.3은 normal distribution 90% 범위     
+#        return upperTarget, lowerTarget      
+    
+    def currentTargetOptBand(self, current_kospi_200, current_HV, remained_day, per_rate): #0.84 80% 1.03 85%  1.29 90%
         kospi200price = pd.to_numeric(current_kospi_200)
-        
-        jandatecnt = remained_day
-        HV = current_HV
+        jandatecnt = pd.to_numeric(remained_day)
+        HV = pd.to_numeric(current_HV)
         #jandatecnt = pd.to_numeric(remained_day)
         #HV =  pd.to_numeric(current_HV) #1.2 는 증폭 ratio이다. 
         #self.HV = 13.46 #전광판엑서 제공한함 다른 방법 필요
         
-        target_sigma = 0.8 # 기준 1.3 은 90% 승률       
-        sigma = HV/100.0*math.sqrt(jandatecnt/252.0)
-        upperTarget = math.exp(math.log(kospi200price)+sigma*target_sigma) #1.3은 normal distribution 90% 범위
-        lowerTarget = math.exp(math.log(kospi200price)-sigma*target_sigma) #1.3은 normal distribution 90% 범위     
-        return upperTarget, lowerTarget      
-    
+        #new approach
+        r = 0.01
+        sigma = HV/100.0
+        #T = jandatecnt/365.0
+        T = jandatecnt/252.0
+        #per_rate = 1.03  #1.03 85%  1.29 90%
+        #per_rate = 1.03  #1.03 85%  1.29 90%
+        #per_rate = 0.84  #0.84 80% 1.03 85%  1.29 90%
+        
+        z_high = math.log(kospi200price)+(r-sigma*sigma/2.0)*T+per_rate*sigma*math.sqrt(T)
+        upperTarget = math.exp(z_high)
+        z_low = math.log(kospi200price)+(r-sigma*sigma/2.0)*T-per_rate*sigma*math.sqrt(T)
+        lowerTarget = math.exp(z_low)
+        return upperTarget, lowerTarget 
 
 if __name__ == '__main__':
     

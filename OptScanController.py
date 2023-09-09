@@ -18,6 +18,8 @@ from PyOptCurrentPriceMon import *
 from optPurse import *
 from OptStatusMonitor import *
 
+from OptStrategy import *
+
 import time
 
 class OptScanContoller(ControllerInterface):
@@ -45,38 +47,7 @@ class OptScanContoller(ControllerInterface):
         self.Option_expiration_mon = self.timemanager.getTargetMonth()  #만기 달 설정 현재보다 1달 많은 다음달 
   
         
-        
-#        self.monitor_mode = _monitor_mode
-#        if self.monitor_mode == "XingAPI":
-#            print("monitor source comes from XingAPI")
-#            
-#            self.optmon = PyOptHogaMon.get_instance()
-#      
-#            self.chekyolmon  = PyOptChegyolMon.get_instance()
-#            #체결 생성 등록
-#            #순서 중요(체결정보를 통해서 kospi 지수가 업데이트 된 이후에  진행되어야 함)
-#            self.HVmon = PyOptCurrentPriceMon() # 역사적 변동성 
-#     
-#            
-#        
-#        elif self.monitor_mode == "simulation":
-#            print("monitor source comes from simulation")
-#            
-#            self.optmon = PyOptHogaMonSimul.get_instance()
-#            self.chekyolmon  = PyOptChegyolMonSimul.get_instance()
-#            self.HVmon = PyOptCurrentPriceMonSimul() # 역사적 변동성 
-#     
-#        
-#        else:
-#            print("monitor mode is not determined")
-#            exit()
-#            
-#            
-#            
-#            
-#        self.optmon.register_subject(optdata)    
-#        self.chekyolmon.register_subject(optdata)  
-#        self.HVmon.register_subject(optdata)
+     
         
         
         self.monitor_mode = _monitor_mode
@@ -90,12 +61,14 @@ class OptScanContoller(ControllerInterface):
              
 
         #db analysis 생성 및 observer 등록
-        self.dbanal = DBalalysis(self.Option_expiration_mon, mode)   
-        self.dbanal.register_subject(optdata)
+        #self.dbanal = DBalalysis(self.Option_expiration_mon, mode)   
+        #self.dbanal.register_subject(optdata)
         
         
-     
-        
+        #self.strategy = BasicStrategy()
+        #self.strategy = StaticStrategy()
+        self.strategy = StaticWinningRate()
+        self.strategy.register_subject(optdata)
          
        
     def Start(self,optdata):
@@ -115,8 +88,8 @@ class OptScanContoller(ControllerInterface):
         print("종료")
         self.optstatmon.end()
         
-        self.dbanal.optvis.showDepositHistory()
-        self.dbanal.optvis.showKospi200History()
+       # self.dbanal.optvis.showDepositHistory()
+      #  self.dbanal.optvis.showKospi200History()
    #     self.dbanal.closeDBanal()
         
     def AutoTradeOn(self):

@@ -17,6 +17,7 @@ import pandas as pd
 from subject import *
 from observer import *
 
+from HistoricalVolatilityCalc import *
 
 class XAQueryEventHandlerT2101:
     query_state = 0
@@ -43,7 +44,7 @@ class PyOptCurrentPriceMon(Observer):
 #----------------------------------------------------------   
         
     
-    def getCurrOptPrice(self, optcode):
+    def getCurrOptPrice(self, optcode):  #From ebest server
                     
         instXAQueryT2101 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventHandlerT2101)
         instXAQueryT2101.ResFileName = "C:\\eBEST\\xingAPI\\Res\\t2101.res"
@@ -57,11 +58,22 @@ class PyOptCurrentPriceMon(Observer):
         histimpv = instXAQueryT2101.GetFieldData("t2101OutBlock", "histimpv",0)            #역사적 변동성
         print("역사적 변동성 ",histimpv)
         return histimpv
+    
+    
+    
+    def getHVfrom30dayskospi200(self):  #From kospi200
+                    
+        HVcalc = HistoricalVolatilityCalc()
+        HV = HVcalc.get30dayHistorcalVol()
+        return str(round(HV,2))
+    
+    
         
         
     def getHistImpv(self, optstrike_, expiredate_):
         code = self.optcode_gen(optstrike_, expiredate_, "call")
-        return self.getCurrOptPrice(code)
+        return self.getHVfrom30dayskospi200()
+        #return self.getCurrOptPrice(code)
         
     def updateHistImpv(self, expiredate_):
         kospi200index = self.subject.get_optEnvStatus("kospi200Index")
@@ -111,6 +123,12 @@ class PyOptCurrentPriceMon(Observer):
             expiration_year_code = "V"
         elif expiration_year=="2025" :
             expiration_year_code = "W"    
+        elif expiration_year=="2026" :
+            expiration_year_code = "6"    
+        elif expiration_year=="2027" :
+            expiration_year_code = "7"    
+        elif expiration_year=="2028" :
+            expiration_year_code = "8"    
         else :
             print("option code is available only for 2025")
             raise Exception("option code is available only for 2025")
@@ -234,9 +252,15 @@ class PyOptCurrentPriceMonSimul(Observer):
             expiration_year_code = "V"
         elif expiration_year=="2025" :
             expiration_year_code = "W"    
+        elif expiration_year=="2026" :
+            expiration_year_code = "6"    
+        elif expiration_year=="2027" :
+            expiration_year_code = "7"    
+        elif expiration_year=="2028" :
+            expiration_year_code = "8" 
         else :
-            print("option code is available only for 2025")
-            raise Exception("option code is available only for 2025")
+            print("option code is available only for 2028")
+            raise Exception("option code is available only for 2028")
 
         #target expiration month
         expiration_month  = expirationdate[4:6]
@@ -294,8 +318,8 @@ if __name__ == "__main__":
     best = BestAccess()                        #Login class 생성
     accounts_list = best.comm_connect(secinfo) #Login 
 
-    pyoptcurrentpricemon = PyOptCurrentPriceMonSimul()
-    pyoptcurrentpricemon.getHistImpv(pd.to_numeric(280), "202002")
+    pyoptcurrentpricemon = PyOptCurrentPriceMon()
+    print(pyoptcurrentpricemon.getHistImpv(pd.to_numeric(410), "202105"))
     
    # while pyoptcurrentpricemon.count < 500:
    #     pythoncom.PumpWaitingMessages()

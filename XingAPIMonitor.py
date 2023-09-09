@@ -20,9 +20,10 @@ class XingAPIMonitor(OptStatusMonitor):
 
 
          #option monitor 생성 및 등록   
-        self.timemanager = timeManager()             
+        self.timemanager = timeManager()       
+        
         self.Option_expiration_mon = self.timemanager.getTargetMonth()  #만기 달 설정 현재보다 1달 많은 다음달 
-  
+        
         
         
         print("monitor source comes from XingAPI")
@@ -41,12 +42,18 @@ class XingAPIMonitor(OptStatusMonitor):
         
         print('optdata has been pushed')  
         print( self.Option_expiration_mon +' is target expiration')
+
+
         
+        
+        self.chekyolmon.start(self.Option_expiration_mon)
+        time.sleep(1)  
+        self.HVmon.start(self.Option_expiration_mon)   
+        time.sleep(1)
         self.optmon.start(self.Option_expiration_mon)  
         time.sleep(1)
-        self.chekyolmon.start(self.Option_expiration_mon)
-        time.sleep(1)
-        self.HVmon.start(self.Option_expiration_mon)       
+  
+    
 
         
     def register_subject(self,optdata):
