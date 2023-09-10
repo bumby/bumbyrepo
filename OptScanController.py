@@ -104,7 +104,7 @@ class OptScanContoller(ControllerInterface):
     
     
 from XingAPIMonitor import *
-from optStatMonitorSimul import *
+from OptStatMonitorSimul import *
         
 #unit test code    
 if __name__ == "__main__":

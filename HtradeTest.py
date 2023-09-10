@@ -16,7 +16,7 @@ from ControllerInterface import *
 from OptScanController import *
 from OptStatusMonitor import *
 from XingAPIMonitor import *  
-from optStatMonitorSimul import *
+from OptStatMonitorSimul import *
 
 form_class = uic.loadUiType("mainwindowv03.ui")[0]
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         optstatmon = XingAPIMonitor()  
         optscancon = OptScanContoller(optdata, optstatmon, "XingAPI")
     elif mode == "simulation":
-        optstatmon = optStatMonitorSimul()
+        optstatmon = OptStatMonitorSimul()
     myWindow = MyWindow(optscancon, optdata)
     myWindow.show()
     app.exec_()

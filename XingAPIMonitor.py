@@ -28,7 +28,7 @@ class XingAPIMonitor(OptStatusMonitor):
         
         print("monitor source comes from XingAPI")
             
-        self.optmon = PyOptHogaMon.get_instance()
+        self.optmon = PyOptHogaMon.get_instance()        
         self.chekyolmon  = PyOptChegyolMon.get_instance()
         self.HVmon = PyOptCurrentPriceMon() # 역사적 변동성 
      

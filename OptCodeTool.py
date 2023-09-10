@@ -48,7 +48,33 @@ class OptCodeTool:
         elif expiration_year=="2024" :
             expiration_year_code = "V"
         elif expiration_year=="2025" :
-            expiration_year_code = "W"  
+            expiration_year_code = "W"
+        elif expiration_year=="2026" :
+            expiration_year_code = "6"
+        elif expiration_year=="2027" :
+            expiration_year_code = "7"
+        elif expiration_year=="2028" :
+            expiration_year_code = "8"
+        elif expiration_year=="2029" :
+            expiration_year_code = "9"
+        elif expiration_year=="2030" :
+            expiration_year_code = "0"
+        elif expiration_year=="2031" :
+            expiration_year_code = "1"
+        elif expiration_year=="2032" :
+            expiration_year_code = "2"
+        elif expiration_year=="2033" :
+            expiration_year_code = "3"
+        elif expiration_year=="2034" :
+            expiration_year_code = "4"
+        elif expiration_year=="2035" :
+            expiration_year_code = "5"
+        elif expiration_year=="2036" :
+            expiration_year_code = "A"
+            
+            
+            
+            
             
         elif expiration_year=="2018" :
             expiration_year_code = "N"  
@@ -82,6 +108,15 @@ class OptCodeTool:
         else :
             print("option code is available only for 2025")
             raise Exception("option code is available only for 2025")
+#변경필요
+#        expiration_year_map = {
+#                "2019": "P",
+#                "2020": "Q",
+#                # ... (다른 년도와 코드 쌍들)
+#                }   
+#        expiration_year_code = expiration_year_map.get(expiration_year)
+#        if not expiration_year_code:
+#            raise Exception("option code is available only for 2025")
 
         #target expiration month
         expiration_month  = expirationdate[4:6]
@@ -156,7 +191,41 @@ class OptCodeTool:
             
         elif expiration_year_code == "W":
             expiration_year="2025" 
-                        
+            
+        elif expiration_year_code == "6":
+            expiration_year="2026" 
+            
+        elif expiration_year_code == "7":
+            expiration_year="2027"      
+        
+        elif expiration_year_code == "8":
+            expiration_year="2028"      
+        
+        elif expiration_year_code == "9":
+            expiration_year="2029"      
+        
+        elif expiration_year_code == "0":
+            expiration_year="2030"      
+        
+        elif expiration_year_code == "1":
+            expiration_year="2031"      
+        
+        elif expiration_year_code == "2":
+            expiration_year="2032"      
+        
+        elif expiration_year_code == "3":
+            expiration_year="2033"      
+        
+        elif expiration_year_code == "4":
+            expiration_year="2034"      
+        
+        elif expiration_year_code == "5":
+            expiration_year="2035"      
+        
+        elif expiration_year_code == "A":
+            expiration_year="2036"      
+        
+                 
         elif expiration_year_code == "N" :
             expiration_year="2018" 
             

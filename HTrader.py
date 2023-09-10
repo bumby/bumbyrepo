@@ -15,7 +15,6 @@ from PyQt5 import uic
 
 
 import pandas as pd
-import sqlite3
 import datetime
 
 #from subject import *
@@ -152,7 +151,7 @@ class MyWindow(QMainWindow, form_class, Observer):
 
 
 from XingAPIMonitor import *   
-from optStatMonitorSimul import *
+from OptStatMonitorSimul import *
         
 if __name__=="__main__":
     app = QApplication(sys.argv)
@@ -164,8 +163,8 @@ if __name__=="__main__":
          optstatmon = XingAPIMonitor()  #data 획득 방법 xing api냐 simulation 이냐 에 따라 생성자 변경
          optscancon = OptScanContoller(optdata,optstatmon, "XingAPI")
     elif mode == "simulation":
-        optstatmon = optStatMonitorSimul()
-        optscancon = OptScanContoller(optdata,optstatmon, "simulation")
+        optstatmon = OptStatMonitorSimul()
+        optscancon = OptScanContoller(optdata,optstatmon, "XingAPI")
     
     myWindow = MyWindow(optscancon, optdata)
     myWindow.show()
